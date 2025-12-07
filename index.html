@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Печать медведя</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    .wrapper {
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .runes {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      letter-spacing: 0.2em;
+      line-height: 1.5;
+      position: relative;
+      text-shadow:
+        0 0 12px rgba(0, 255, 200, 0.4),
+        0 0 28px rgba(0, 180, 255, 0.3);
+      animation: glitch 2s infinite;
+      white-space: pre-line;
+    }
+
+    @keyframes glitch {
+      0% {
+        transform: translate(0, 0);
+        text-shadow:
+          0 0 12px rgba(0, 255, 200, 0.4),
+          0 0 28px rgba(0, 180, 255, 0.3);
+      }
+      10% {
+        transform: translate(-1px, 1px);
+        text-shadow:
+          -2px 0 rgba(255, 0, 128, 0.6),
+          2px 0 rgba(0, 255, 255, 0.6);
+      }
+      20% {
+        transform: translate(1px, -1px);
+        text-shadow:
+          -2px 0 rgba(0, 255, 255, 0.5),
+          2px 0 rgba(255, 0, 128, 0.5);
+      }
+      25% {
+        transform: translate(0, 0);
+        text-shadow:
+          0 0 10px rgba(0, 255, 200, 0.35),
+          0 0 20px rgba(0, 180, 255, 0.3);
+      }
+      60% {
+        transform: translate(0.5px, -0.5px);
+        text-shadow:
+          -1px 0 rgba(255, 0, 128, 0.4),
+          1px 0 rgba(0, 255, 255, 0.4);
+      }
+      70% {
+        transform: translate(-0.5px, 0.5px);
+      }
+      100% {
+        transform: translate(0, 0);
+        text-shadow:
+          0 0 12px rgba(0, 255, 200, 0.4),
+          0 0 28px rgba(0, 180, 255, 0.3);
+      }
+    }
+
+    .vignette {
+      position: fixed;
+      inset: -10%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top left, rgba(0, 255, 200, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255, 0, 128, 0.12), transparent 55%);
+      mix-blend-mode: screen;
+      opacity: 0.6;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="vignette"></div>
+  <div class="wrapper">
+    <div class="runes">
+ᚨᛞ-ᛗᛁᚾ
+⟒⧝⟁⟁⟁⟟⟊
+ᛗᛖᛞᚢᛖᛞᛃᚨ
+    </div>
+  </div>
+</body>
+</html>
