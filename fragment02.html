@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fragment-02</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    .wrapper {
+      text-align: center;
+      padding: 1rem;
+      z-index: 2;
+    }
+
+    .runes {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      letter-spacing: 0.2em;
+      line-height: 1.5;
+      text-shadow:
+        0 0 12px rgba(0, 255, 200, 0.4),
+        0 0 28px rgba(0, 180, 255, 0.3);
+      animation: glitch 2s infinite;
+      white-space: pre-line;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-1px, 1px); }
+      20% { transform: translate(1px, -1px); }
+      25% { transform: translate(0, 0); }
+      60% { transform: translate(0.5px, -0.5px); }
+      70% { transform: translate(-0.5px, 0.5px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .hint-link {
+      position: fixed;
+      bottom: 10px;
+      right: 14px;
+      font-size: 0.75rem;
+      opacity: 0.18;
+      z-index: 3;
+      transition: opacity 0.3s ease;
+    }
+
+    .hint-link:hover {
+      opacity: 0.6;
+    }
+
+    .hint-link a {
+      color: #9ad;
+      text-decoration: none;
+      text-shadow: 0 0 6px rgba(0, 255, 200, 0.6);
+    }
+
+    .cta {
+      margin-top: 32px;
+    }
+
+    .cta a {
+      display: inline-block;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      color: #e5faff;
+      text-decoration: none;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 200, 0.45);
+      background: rgba(0, 255, 200, 0.12);
+      backdrop-filter: blur(4px);
+      transition: 0.25s ease;
+    }
+
+    .cta a:hover {
+      background: rgba(0, 255, 200, 0.25);
+      border-color: rgba(0, 255, 200, 0.7);
+      text-shadow: 0 0 8px rgba(0, 255, 200, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="runes">
+ᚨᛞ-ᛗᛁᚾ
+⟒⧝⟁⟁⟁⟟⟊
+ᛗᛖᛞᚢᛖᛞᛃᚨ
+    </div>
+    <div class="cta">
+      <a href="hub.html">получить подсказку</a>
+    </div>
+  </div>
+
+  <div class="hint-link">
+    <a href="https://www.dcode.fr/elder-futhark-runes" target="_blank">···</a>
+  </div>
+</body>
+</html>
