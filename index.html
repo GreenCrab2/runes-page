@@ -26,43 +26,73 @@
       color: #f5f5f5;
     }
 
-    /* белый шум / телевизор */
-    .noise {
+    /* тёмный фон-небо */
+    .bg {
       position: fixed;
-      inset: -10px;
+      inset: 0;
       background:
-        repeating-linear-gradient(
-          0deg,
-          #111 0px,
-          #111 2px,
-          #000 2px,
-          #000 4px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0.25) 0px,
-          rgba(255,255,255,0.25) 1px,
-          rgba(0,0,0,0.1) 1px,
-          rgba(0,0,0,0.1) 3px
-        );
-      opacity: 0.4;
-      mix-blend-mode: screen;
-      animation: noiseShift 0.4s infinite steps(4);
-      pointer-events: none;
+        radial-gradient(circle at top, #210020 0%, #050111 40%, #000 75%),
+        linear-gradient(to bottom, #050111 0%, #020b08 55%, #000 100%);
       z-index: 0;
     }
 
+    /* силуэты леса снизу */
+    .forest {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -10px;
+      height: 40%;
+      background:
+        repeating-linear-gradient(
+          -5deg,
+          #000 0px,
+          #000 10px,
+          #020a05 10px,
+          #020a05 24px
+        );
+      mask-image: radial-gradient(circle at top, transparent 0, #000 58%);
+      opacity: 0.95;
+      z-index: 0;
+    }
+
+    /* белый шум (телевизор) */
+    .noise {
+      position: fixed;
+      inset: -20px;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.36) 0px,
+          rgba(255,255,255,0.36) 1px,
+          rgba(0,0,0,0.55) 1px,
+          rgba(0,0,0,0.55) 3px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,0.32) 0px,
+          rgba(255,255,255,0.32) 1px,
+          rgba(0,0,0,0.55) 1px,
+          rgba(0,0,0,0.55) 3px
+        );
+      opacity: 0.65;
+      mix-blend-mode: screen;
+      animation: noiseShift 0.35s infinite steps(4);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* лёгкие цветные потёки поверх шума */
     .noise::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08) 0, transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(0,255,255,0.08) 0, transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255,0,128,0.08) 0, transparent 55%);
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.16) 0, transparent 60%),
+        radial-gradient(circle at 0% 100%, rgba(0,255,255,0.16) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255,0,128,0.18) 0, transparent 55%);
       mix-blend-mode: lighten;
-      opacity: 0.8;
-      animation: colorDrift 3s infinite ease-in-out;
+      animation: colorDrift 3.2s infinite ease-in-out;
     }
 
     /* горизонтальные скан-линии */
@@ -71,57 +101,57 @@
       inset: 0;
       background: repeating-linear-gradient(
         0deg,
-        rgba(0,0,0,0.7) 0px,
-        rgba(0,0,0,0.7) 1px,
+        rgba(0,0,0,0.78) 0px,
+        rgba(0,0,0,0.78) 1px,
         transparent 1px,
         transparent 3px
       );
-      opacity: 0.5;
+      opacity: 0.55;
       mix-blend-mode: multiply;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
 
     @keyframes noiseShift {
       0%   { transform: translate3d(0,0,0); }
-      25%  { transform: translate3d(-8px, 4px, 0); }
-      50%  { transform: translate3d(6px, -6px, 0); }
-      75%  { transform: translate3d(-4px, 6px, 0); }
+      25%  { transform: translate3d(-10px, 6px, 0); }
+      50%  { transform: translate3d(8px, -8px, 0); }
+      75%  { transform: translate3d(-6px, 8px, 0); }
       100% { transform: translate3d(0,0,0); }
     }
 
     @keyframes colorDrift {
       0%   { transform: translateX(0); }
-      25%  { transform: translateX(-18px); }
-      50%  { transform: translateX(12px); }
-      75%  { transform: translateX(-6px); }
+      25%  { transform: translateX(-20px); }
+      50%  { transform: translateX(14px); }
+      75%  { transform: translateX(-8px); }
       100% { transform: translateX(0); }
     }
 
     .content {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       padding: 1rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transform: translateY(-10vh); /* поднимаем блок немного выше центра */
+      transform: translateY(-14vh); /* поднимаем блок выше центра */
     }
 
     .time {
-      font-size: clamp(2.6rem, 7vw, 4rem);
-      letter-spacing: 0.22em;
+      font-size: clamp(2.8rem, 7.5vw, 4.2rem);
+      letter-spacing: 0.24em;
       text-shadow:
-        0 0 10px rgba(0, 255, 200, 0.6),
-        0 0 26px rgba(0, 180, 255, 0.5);
-      margin-bottom: 38px; /* больше отступ, чтобы точно не наезжало */
+        0 0 10px rgba(0, 255, 200, 0.7),
+        0 0 28px rgba(0, 180, 255, 0.6);
+      margin-bottom: 60px; /* большой отступ, чтобы текст точно не наезжал */
     }
 
     .phrases {
       position: relative;
-      min-width: 320px;
-      min-height: 3.4em; /* запас по высоте строки */
+      min-width: 340px;
+      min-height: 4.5em; /* запас по высоте под длинные варианты в 2 строки */
     }
 
     .phrase {
@@ -130,27 +160,33 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.7rem, 4.8vw, 3rem);
-      line-height: 1.2;
+      font-size: clamp(1.6rem, 4.6vw, 2.9rem);
+      line-height: 1.25;
       letter-spacing: 0.14em;
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(10px);
       text-transform: uppercase;
       text-shadow:
-        0 0 10px rgba(0, 255, 200, 0.5),
-        0 0 24px rgba(0, 180, 255, 0.4);
+        0 0 10px rgba(0, 255, 200, 0.55),
+        0 0 26px rgba(0, 180, 255, 0.45);
       mix-blend-mode: screen;
       transition:
         opacity 0.35s ease-out,
         transform 0.35s ease-out,
         filter 0.35s ease-out;
       filter: blur(1px);
-      padding: 0 1.2rem;
+      padding: 0 1.4rem;
     }
 
-    .phrase.jp {
+    .phrase.jp,
+    .phrase.rtl {
       text-transform: none;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.18em;
+    }
+
+    .phrase.rtl {
+      direction: rtl;
+      unicode-bidi: bidi-override;
     }
 
     .phrase.active {
@@ -162,24 +198,26 @@
 
     @keyframes activeGlitch {
       0%   { text-shadow:
-              0 0 10px rgba(0,255,200,0.6),
-              0 0 24px rgba(0,180,255,0.5); }
+              0 0 10px rgba(0,255,200,0.7),
+              0 0 26px rgba(0,180,255,0.6); }
       25%  { text-shadow:
-              -2px 0 rgba(255,0,128,0.7),
-              2px 0 rgba(0,255,255,0.7); }
+              -2px 0 rgba(255,0,128,0.8),
+              2px 0 rgba(0,255,255,0.8); }
       50%  { text-shadow:
-              2px 0 rgba(0,255,255,0.7),
-              -2px 0 rgba(255,0,128,0.7); }
+              2px 0 rgba(0,255,255,0.8),
+              -2px 0 rgba(255,0,128,0.8); }
       75%  { text-shadow:
-              0 0 10px rgba(0,255,200,0.6),
-              0 0 24px rgba(0,180,255,0.5); }
+              0 0 10px rgba(0,255,200,0.7),
+              0 0 26px rgba(0,180,255,0.6); }
       100% { text-shadow:
-              0 0 10px rgba(0,255,200,0.6),
-              0 0 24px rgba(0,180,255,0.5); }
+              0 0 10px rgba(0,255,200,0.7),
+              0 0 26px rgba(0,180,255,0.6); }
     }
   </style>
 </head>
 <body>
+  <div class="bg"></div>
+  <div class="forest"></div>
   <div class="noise"></div>
   <div class="scanlines"></div>
 
@@ -188,16 +226,27 @@
       <div class="time">20:39</div>
 
       <div class="phrases">
-        <div class="phrase">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
+        <!-- 20 языков, порядок перемешан -->
         <div class="phrase">CURSE OF THE BEAR</div>
         <div class="phrase">DER FLUCH DES BÄREN</div>
-        <div class="phrase">LA MALDICIÓN DEL OSO</div>
-        <div class="phrase">LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
         <div class="phrase jp">熊の呪い</div>
-        <div class="phrase">MALEDICTIO URSI</div>
-        <div class="phrase">LA MALEDIZIONE DELL&rsquo;ORSO</div>
         <div class="phrase">A MALDIÇÃO DO URSO</div>
+        <div class="phrase">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
+        <div class="phrase">LA MALEDIZIONE DELL&rsquo;ORSO</div>
+        <div class="phrase">BJÖRNS FÖRBANNELSE</div>
+        <div class="phrase rtl">لَعْنَةُ الدُّبِّ</div>
         <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
+        <div class="phrase">Η ΚΑΤΑΡΑ ΤΗΣ ΑΡΚΟΥΔΑΣ</div>
+        <div class="phrase">PROKLETSTVO MEDVJEDA</div>
+        <div class="phrase">LA MALDICIÓN DEL OSO</div>
+        <div class="phrase">DE VLOEK VAN DE BEER</div>
+        <div class="phrase">KARHUN KIROUS</div>
+        <div class="phrase">BJØRNENS FORBANNELSE</div>
+        <div class="phrase">MALEDICTIO URSI</div>
+        <div class="phrase">AYININ LANETI</div>
+        <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
+        <div class="phrase">LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
+        <div class="phrase">KLETBA MEDVĚDA</div>
       </div>
     </div>
   </div>
