@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Верхняя строка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    h1 { font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 14px; }
+    p  { font-size: 0.95rem; opacity: 0.85; margin-bottom: 14px; }
+
+    .fake {
+      margin-top: 12px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 0, 128, 0.5);
+      background: rgba(255, 0, 128, 0.08);
+      opacity: 0.9;
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .code {
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+
+    .back {
+      margin-top: 22px;
+      font-size: 0.85rem;
+    }
+
+    .back a {
+      color: #9ad;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Верхняя строка</h1>
+    <p>Сначала кажется, что это имя духа, составленное из рун. Это ловушка.</p>
+
+    <div class="fake">
+      ᚨᛞᛗᛁᚾ = «Админ».<br/>
+      Звучит забавно, но к ответу не ведёт.
+    </div>
+
+    <p class="hint">
+      Посмотри не на буквы, а на форму.<br/>
+      Что делает знак посередине строки?
+    </p>
+
+    <div class="code">
+      ᚨᛞ<span> - </span>ᛗᛁᚾ<br/>
+      ?? : ??
+    </div>
+
+    <p class="hint">
+      Вся строка ведёт себя как запись времени.<br/>
+      Верхняя часть ответа — это <strong>часы и минуты</strong>.
+    </p>
+
+    <div class="back">
+      Вернись к другим тропам: <a href="hub.html">назад к узлам леса</a>.
+    </div>
+  </div>
+</body>
+</html>
