@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Финал</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      margin-bottom: 14px;
+    }
+    p {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+    .strong {
+      margin: 8px 0 18px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .buttons {
+      margin-top: 24px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      color: #e5faff;
+      background: rgba(0, 255, 200, 0.12);
+      border: 1px solid rgba(0, 255, 200, 0.45);
+      border-radius: 999px;
+      text-decoration: none;
+      transition: 0.25s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn:hover {
+      background: rgba(0, 255, 200, 0.25);
+      border-color: rgba(0, 255, 200, 0.7);
+      text-shadow: 0 0 8px rgba(0, 255, 200, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Браво-браво-браво.</h1>
+    <p>Я и не думал, что хоть один культист сумеет пройти все тропы и пережить все ловушки.</p>
+    <p>Раз уж ты дошёл до конца, значит, знаешь, что именно шепчет лес.</p>
+    <p class="strong">И знаешь, что совсем скоро будет та самая дата.<br/>Да-да, 666 дней.</p>
+    <p>Если хочешь продолжить историю уже вживую — выбирай портал:</p>
+
+    <div class="buttons">
+      <a class="btn" href="https://live.vkvideo.ru/greencrab" target="_blank">VK Видео Live</a>
+      <a class="btn" href="https://www.twitch.tv/greencrab_" target="_blank">Twitch</a>
+    </div>
+  </div>
+</body>
+</html>
