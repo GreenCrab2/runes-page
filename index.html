@@ -15,7 +15,6 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* общий контейнер */
     .root {
       position: relative;
       width: 100%;
@@ -54,7 +53,7 @@
       z-index: 0;
     }
 
-    /* цветные размазанные пятна */
+    /* цветные пятна */
     .root::after {
       content: "";
       position: fixed;
@@ -88,7 +87,6 @@
       100% { transform: translateX(0px); }
     }
 
-    /* блок с фразами */
     .content {
       position: relative;
       z-index: 1;
@@ -106,6 +104,7 @@
     .phrases {
       position: relative;
       min-width: 260px;
+      min-height: 2.8em; /* резерв для высоты строки */
     }
 
     .phrase {
@@ -117,37 +116,41 @@
       font-size: clamp(1.4rem, 3.4vw, 2.4rem);
       letter-spacing: 0.08em;
       opacity: 0;
+      transform: translateY(4px);
       text-shadow:
-        0 0 10px rgba(0, 255, 200, 0.6),
-        0 0 22px rgba(0, 180, 255, 0.5);
+        0 0 10px rgba(0, 255, 200, 0.5),
+        0 0 22px rgba(0, 180, 255, 0.4);
       mix-blend-mode: screen;
-      animation: cycle 14s infinite steps(1, end);
+      transition:
+        opacity 0.35s ease-out,
+        transform 0.35s ease-out,
+        filter 0.35s ease-out;
+      filter: blur(1px);
     }
 
-    /* каждая строка появляется в своё окно времени */
-    .phrase:nth-child(1) { animation-delay: 0s; }
-    .phrase:nth-child(2) { animation-delay: 2s; }
-    .phrase:nth-child(3) { animation-delay: 4s; }
-    .phrase:nth-child(4) { animation-delay: 6s; }
-    .phrase:nth-child(5) { animation-delay: 8s; }
-    .phrase:nth-child(6) { animation-delay: 10s; }
-    .phrase:nth-child(7) { animation-delay: 12s; }
-
-    @keyframes cycle {
-      0%   { opacity: 0; transform: translate(0,0); filter: none; }
-      5%   { opacity: 1; }
-      20%  { opacity: 1; transform: translate(-1px, 1px); }
-      25%  { opacity: 1; transform: translate(1px, -1px); }
-      28%  { opacity: 1; transform: translate(0,0); filter: drop-shadow(0 0 6px rgba(255,0,128,0.6)); }
-      30%  { opacity: 0; transform: translate(3px, -3px); filter: none; }
-      100% { opacity: 0; transform: translate(0,0); filter: none; }
+    .phrase.active {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+      animation: activeGlitch 1.4s infinite;
     }
 
-    /* чтобы первый кадр не был пустым */
-    .phrases::before {
-      content: "";
-      visibility: hidden;
-      font-size: clamp(1.4rem, 3.4vw, 2.4rem);
+    @keyframes activeGlitch {
+      0%   { text-shadow:
+              0 0 10px rgba(0,255,200,0.6),
+              0 0 22px rgba(0,180,255,0.5); }
+      20%  { text-shadow:
+              -2px 0 rgba(255,0,128,0.7),
+              2px 0 rgba(0,255,255,0.7); }
+      40%  { text-shadow:
+              2px 0 rgba(0,255,255,0.7),
+              -2px 0 rgba(255,0,128,0.7); }
+      60%  { text-shadow:
+              0 0 10px rgba(0,255,200,0.6),
+              0 0 22px rgba(0,180,255,0.5); }
+      100% { text-shadow:
+              0 0 10px rgba(0,255,200,0.6),
+              0 0 22px rgba(0,180,255,0.5); }
     }
 
     .note {
@@ -173,9 +176,25 @@
       </div>
 
       <div class="note">
-        сигнал дрожит, языки переплетаются, дата остаётся той же
+        сигнал дрожит, языки меняются, дата остаётся той же
       </div>
     </div>
   </div>
+
+  <script>
+    const phrases = Array.from(document.querySelectorAll('.phrase'));
+    let index = 0;
+
+    function showNext() {
+      phrases.forEach(p => p.classList.remove('active'));
+      phrases[index].classList.add('active');
+      index = (index + 1) % phrases.length;
+    }
+
+    // первый показ сразу
+    showNext();
+    // смена каждые 2 секунды
+    setInterval(showNext, 2000);
+  </script>
 </body>
 </html>
