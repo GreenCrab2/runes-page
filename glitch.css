@@ -1,0 +1,69 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* основной шум */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  animation: glitchNoise 0.7s infinite steps(4);
+  pointer-events: none;
+}
+
+/* цветные размазанные полосы */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20px;
+  background: 
+    linear-gradient(
+      rgba(255, 0, 200, 0.08) 10%,
+      rgba(0, 255, 200, 0.05) 40%,
+      rgba(0, 150, 255, 0.08) 70%
+    );
+  filter: blur(30px);
+  mix-blend-mode: lighten;
+  animation: glitchColor 3s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes glitchNoise {
+  0%   { transform: translate3d(0,0,0); }
+  25%  { transform: translate3d(-8px, 4px, 0); }
+  50%  { transform: translate3d(6px, -6px, 0); }
+  75%  { transform: translate3d(-4px, 6px, 0); }
+  100% { transform: translate3d(0,0,0); }
+}
+
+@keyframes glitchColor {
+  0%   { transform: translateX(0px); }
+  25%  { transform: translateX(-15px); }
+  50%  { transform: translateX(10px); }
+  75%  { transform: translateX(-5px); }
+  100% { transform: translateX(0px); }
+}
