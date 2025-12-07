@@ -13,9 +13,10 @@
       overflow: hidden;
       background: #000;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e8ffff;
     }
 
-    /* ------------ ФОНОВОЕ ВИДЕО ЛЕСА ------------ */
+    /* ------------ ФОНОВОЕ ВИДЕО ------------ */
 
     #bg-video {
       position: fixed;
@@ -25,143 +26,113 @@
       object-fit: cover;
       z-index: 0;
       filter:
-        contrast(1.1)
-        saturate(0.85)
-        brightness(0.85)
-        hue-rotate(-5deg)
+        contrast(1.05)
+        brightness(0.9)
+        saturate(0.8)
+        hue-rotate(-10deg)
+        blur(0.3px)
         drop-shadow(-1px 0 rgba(255, 0, 128, 0.25))
         drop-shadow(1px 0 rgba(0, 255, 255, 0.25));
     }
 
-    /* лёгкое затемнение, чтобы текст читался */
+    /* Тёмный слой поверх видео */
     .dark-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(0,0,0,0.25) 0, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.9) 100%);
+      background: rgba(0,0,0,0.45);
       z-index: 1;
       pointer-events: none;
     }
 
-    /* белый шум телевизора */
-    .tv-noise {
+    /* VHS шум, не мерцающий */
+    .noise {
       position: fixed;
       inset: -20px;
-      background:
-        repeating-linear-gradient(
-          0deg,
-          rgba(255,255,255,0.32) 0px,
-          rgba(255,255,255,0.32) 1px,
-          rgba(0,0,0,0.55) 1px,
-          rgba(0,0,0,0.55) 3px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0.28) 0px,
-          rgba(255,255,255,0.28) 1px,
-          rgba(0,0,0,0.55) 1px,
-          rgba(0,0,0,0.55) 3px
-        );
-      opacity: 0.45;
-      mix-blend-mode: screen;
+      background-image: url('https://i.imgur.com/6Iej2cR.png');
+      background-size: cover;
+      opacity: 0.15;
       z-index: 2;
       pointer-events: none;
-      animation: tvNoiseMove 1.6s infinite steps(4);
+      animation: noiseShift 9s infinite linear;
     }
 
-    @keyframes tvNoiseMove {
-      0%   { transform: translate(0,0); }
-      25%  { transform: translate(-4px, 2px); }
-      50%  { transform: translate(3px, -3px); }
-      75%  { transform: translate(-3px, 3px); }
-      100% { transform: translate(0,0); }
+    @keyframes noiseShift {
+      0% { transform: translate(0,0); }
+      100% { transform: translate(-30px, 0); }
     }
 
-    /* горизонтальные скан-линии */
+    /* VHS горизонтальные полосы */
     .scanlines {
       position: fixed;
       inset: 0;
       background: repeating-linear-gradient(
         0deg,
-        rgba(0,0,0,0.85) 0px,
-        rgba(0,0,0,0.85) 1px,
-        transparent 1px,
-        transparent 3px
+        rgba(0,0,0,0.35) 0px,
+        rgba(0,0,0,0.35) 2px,
+        transparent 3px,
+        transparent 5px
       );
-      opacity: 0.55;
-      mix-blend-mode: multiply;
+      opacity: 0.3;
       z-index: 3;
+      mix-blend-mode: multiply;
       pointer-events: none;
     }
 
-    /* лёгкая виньетка по краям */
+    /* Виньетка */
     .vignette {
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
       z-index: 4;
       pointer-events: none;
     }
 
-    /* ------------ КОНТЕНТ ------------ */
+    /* ------------ ТЕКСТ ------------ */
 
     .root {
       position: relative;
       width: 100%;
       height: 100%;
+      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      color: #f5f5f5;
-      z-index: 5;
     }
 
     .content {
-      padding: 1rem;
+      transform: translateY(-14vh);
       display: flex;
       flex-direction: column;
       align-items: center;
-      transform: translateY(-14vh); /* чуть выше центра */
     }
 
     .time {
-      font-size: clamp(2.9rem, 8vw, 4.3rem);
-      letter-spacing: 0.24em;
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      letter-spacing: 0.22em;
+      margin-bottom: 50px;
       text-shadow:
-        0 0 10px rgba(0,255,200,0.9),
-        0 0 28px rgba(0,180,255,0.8);
-      margin-bottom: 60px;
+        0 0 4px rgba(0,255,200,0.3),
+        0 0 8px rgba(0,180,255,0.3);
     }
 
     .phrases {
-      position: relative;
+      min-height: 4.6em;
       min-width: 340px;
-      min-height: 4.6em; /* запас на две строки */
+      position: relative;
     }
 
     .phrase {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(1.6rem, 4.6vw, 2.9rem);
-      line-height: 1.3;
-      letter-spacing: 0.14em;
       opacity: 0;
-      transform: translateY(10px);
-      text-transform: uppercase;
+      transform: translateY(6px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+      font-size: clamp(1.6rem, 4.6vw, 2.9rem);
+      letter-spacing: 0.14em;
       text-shadow:
-        0 0 10px rgba(0,255,200,0.7),
-        0 0 26px rgba(0,180,255,0.6);
-      filter: blur(1px);
-      transition:
-        opacity 0.45s ease-out,
-        transform 0.45s ease-out,
-        filter 0.45s ease-out;
-      padding: 0 1.4rem;
-      mix-blend-mode: screen;
+        0 0 4px rgba(0,255,200,0.25),
+        0 0 8px rgba(0,180,255,0.25);
     }
 
     .phrase.jp,
@@ -178,76 +149,42 @@
     .phrase.active {
       opacity: 1;
       transform: translateY(0);
-      filter: blur(0);
-      animation: softGlitch 3s infinite ease-in-out;
     }
 
-    /* мягкий, не тошнотный глитч */
-    @keyframes softGlitch {
-      0% {
-        text-shadow:
-          0 0 10px rgba(0,255,200,0.7),
-          0 0 26px rgba(0,180,255,0.6);
-      }
-      50% {
-        text-shadow:
-          -1px 0 rgba(255,0,128,0.7),
-          1px 0 rgba(0,255,255,0.7);
-      }
-      100% {
-        text-shadow:
-          0 0 10px rgba(0,255,200,0.7),
-          0 0 26px rgba(0,180,255,0.6);
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- видео леса -->
-  <video
-    id="bg-video"
-    src="forest.mp4"
-    autoplay
-    loop
-    muted
-    playsinline
-  ></video>
+  <video id="bg-video" src="forest.mp4" autoplay loop muted playsinline></video>
 
-  <!-- оверлеи ТВ -->
   <div class="dark-overlay"></div>
-  <div class="tv-noise"></div>
+  <div class="noise"></div>
   <div class="scanlines"></div>
   <div class="vignette"></div>
 
-  <!-- контент -->
   <div class="root">
     <div class="content">
+
       <div class="time">20:39</div>
 
       <div class="phrases">
-        <!-- 20 языков, по одному на экран -->
-        <div class="phrase">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
+        <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
         <div class="phrase">CURSE OF THE BEAR</div>
         <div class="phrase">DER FLUCH DES BÄREN</div>
         <div class="phrase jp">熊の呪い</div>
         <div class="phrase">LA MALDICIÓN DEL OSO</div>
-        <div class="phrase">LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
         <div class="phrase rtl">لَعْنَةُ الدُّبِّ</div>
         <div class="phrase">MALEDICTIO URSI</div>
-        <div class="phrase">LA MALEDIZIONE DELL&rsquo;ORSO</div>
+        <div class="phrase">LA MALEDIZIONE DELL’ORSO</div>
         <div class="phrase">A MALDIÇÃO DO URSO</div>
         <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
         <div class="phrase">KARHUN KIROUS</div>
-        <div class="phrase">BJØRNENS FORBANNELSE</div>
         <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
-        <div class="phrase">KLETBA MEDVĚDA</div>
-        <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
         <div class="phrase">DE VLOEK VAN DE BEER</div>
-        <div class="phrase">URSI DAMNATIO</div>
-        <div class="phrase">THE BEAR’S HEX</div>
+        <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
         <div class="phrase">AYININ LANETI</div>
       </div>
+
     </div>
   </div>
 
@@ -261,8 +198,6 @@
       index = (index + 1) % phrases.length;
     }
 
-    showNext();
-    // плавная смена раз в 2.6 секунды
     setInterval(showNext, 2600);
   </script>
 </body>
