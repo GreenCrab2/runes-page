@@ -26,18 +26,47 @@
       color: #f5f5f5;
     }
 
-    /* шум */
-    .root::before {
-      content: "";
+    /* базовый градиент как небо */
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at top, #2b002e 0%, #050111 40%, #000 70%),
+        linear-gradient(to bottom, #050111 0%, #020b08 55%, #000 100%);
+      z-index: 0;
+    }
+
+    /* “лес” внизу — силуэты деревьев */
+    .forest {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -10px;
+      height: 35%;
+      background:
+        repeating-linear-gradient(
+          -6deg,
+          #000 0px,
+          #000 6px,
+          #020b06 6px,
+          #020b06 14px
+        );
+      mask-image: radial-gradient(circle at top, transparent 0, #000 55%);
+      opacity: 0.9;
+      z-index: 0;
+    }
+
+    /* VHS шум */
+    .noise {
       position: fixed;
       inset: 0;
       background:
         repeating-linear-gradient(
           0deg,
-          rgba(255, 255, 255, 0.04) 0px,
-          rgba(255, 255, 255, 0.04) 1px,
+          rgba(255, 255, 255, 0.06) 0px,
+          rgba(255, 255, 255, 0.06) 1px,
           transparent 1px,
-          transparent 4px
+          transparent 3px
         ),
         repeating-linear-gradient(
           90deg,
@@ -46,32 +75,31 @@
           transparent 1px,
           transparent 4px
         );
-      opacity: 0.22;
       mix-blend-mode: screen;
-      animation: glitchNoise 0.7s infinite steps(4);
+      opacity: 0.25;
+      animation: noiseShift 0.9s infinite steps(4);
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
     }
 
-    /* цветные пятна */
-    .root::after {
-      content: "";
+    /* лёгкие цветные потёки */
+    .color-bleed {
       position: fixed;
       inset: -20px;
       background:
         linear-gradient(
-          rgba(255, 0, 200, 0.12) 10%,
-          rgba(0, 255, 200, 0.06) 40%,
-          rgba(0, 150, 255, 0.12) 70%
+          rgba(255, 0, 200, 0.08) 10%,
+          rgba(0, 255, 200, 0.04) 40%,
+          rgba(0, 150, 255, 0.08) 80%
         );
-      filter: blur(32px);
+      filter: blur(30px);
       mix-blend-mode: lighten;
-      animation: glitchColor 3s infinite ease-in-out;
+      animation: colorDrift 4s infinite ease-in-out;
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
     }
 
-    @keyframes glitchNoise {
+    @keyframes noiseShift {
       0%   { transform: translate3d(0,0,0); }
       25%  { transform: translate3d(-8px, 4px, 0); }
       50%  { transform: translate3d(6px, -6px, 0); }
@@ -79,32 +107,41 @@
       100% { transform: translate3d(0,0,0); }
     }
 
-    @keyframes glitchColor {
-      0%   { transform: translateX(0px); }
-      25%  { transform: translateX(-15px); }
-      50%  { transform: translateX(10px); }
-      75%  { transform: translateX(-5px); }
-      100% { transform: translateX(0px); }
+    @keyframes colorDrift {
+      0%   { transform: translateX(0); }
+      25%  { transform: translateX(-18px); }
+      50%  { transform: translateX(12px); }
+      75%  { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
     }
 
     .content {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       padding: 1rem;
     }
 
     .label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      opacity: 0.6;
+      opacity: 0.55;
+      margin-bottom: 14px;
+    }
+
+    .time {
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      letter-spacing: 0.18em;
+      text-shadow:
+        0 0 10px rgba(0, 255, 200, 0.6),
+        0 0 26px rgba(0, 180, 255, 0.5);
       margin-bottom: 10px;
     }
 
     .phrases {
       position: relative;
-      min-width: 260px;
-      min-height: 2.8em; /* резерв для высоты строки */
+      min-width: 280px;
+      min-height: 2.8em;
     }
 
     .phrase {
@@ -113,19 +150,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.4rem, 3.4vw, 2.4rem);
-      letter-spacing: 0.08em;
+      font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+      line-height: 1.2;
+      letter-spacing: 0.12em;
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(6px);
+      text-transform: uppercase;
       text-shadow:
         0 0 10px rgba(0, 255, 200, 0.5),
-        0 0 22px rgba(0, 180, 255, 0.4);
+        0 0 24px rgba(0, 180, 255, 0.4);
       mix-blend-mode: screen;
       transition:
         opacity 0.35s ease-out,
         transform 0.35s ease-out,
         filter 0.35s ease-out;
       filter: blur(1px);
+      padding: 0 1rem;
     }
 
     .phrase.active {
@@ -138,44 +178,52 @@
     @keyframes activeGlitch {
       0%   { text-shadow:
               0 0 10px rgba(0,255,200,0.6),
-              0 0 22px rgba(0,180,255,0.5); }
-      20%  { text-shadow:
+              0 0 24px rgba(0,180,255,0.5); }
+      25%  { text-shadow:
               -2px 0 rgba(255,0,128,0.7),
               2px 0 rgba(0,255,255,0.7); }
-      40%  { text-shadow:
+      50%  { text-shadow:
               2px 0 rgba(0,255,255,0.7),
               -2px 0 rgba(255,0,128,0.7); }
-      60%  { text-shadow:
+      75%  { text-shadow:
               0 0 10px rgba(0,255,200,0.6),
-              0 0 22px rgba(0,180,255,0.5); }
+              0 0 24px rgba(0,180,255,0.5); }
       100% { text-shadow:
               0 0 10px rgba(0,255,200,0.6),
-              0 0 22px rgba(0,180,255,0.5); }
+              0 0 24px rgba(0,180,255,0.5); }
     }
 
     .note {
-      margin-top: 24px;
+      margin-top: 26px;
       font-size: 0.8rem;
       opacity: 0.5;
     }
   </style>
 </head>
 <body>
+  <div class="bg"></div>
+  <div class="forest"></div>
+  <div class="color-bleed"></div>
+  <div class="noise"></div>
+
   <div class="root">
     <div class="content">
-      <div class="label"> </div>
+      <div class="label">signal locked</div>
+
+      <div class="time">20:39</div>
 
       <div class="phrases">
-        <div class="phrase">20:39 ПРОКЛЯТИЕ МЕДВЕДЯ</div>
-        <div class="phrase">20:39 CURSE OF THE BEAR</div>
-        <div class="phrase">20:39 DER FLUCH DES BÄREN</div>
-        <div class="phrase">20:39 LA MALDICIÓN DEL OSO</div>
-        <div class="phrase">20:39 LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
-        <div class="phrase">20:39 熊の呪い</div>
-        <div class="phrase">20:39 MALEDICTIO URSI</div>
+        <div class="phrase">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
+        <div class="phrase">CURSE OF THE BEAR</div>
+        <div class="phrase">DER FLUCH DES BÄREN</div>
+        <div class="phrase">LA MALDICIÓN DEL OSO</div>
+        <div class="phrase">LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
+        <div class="phrase">熊の呪い</div>
+        <div class="phrase">MALEDICTIO URSI</div>
       </div>
 
       <div class="note">
+        сигнал дрожит, языки меняются, время остаётся тем же
       </div>
     </div>
   </div>
@@ -190,10 +238,8 @@
       index = (index + 1) % phrases.length;
     }
 
-    // первый показ сразу
     showNext();
-    // смена каждые 2 секунды
-    setInterval(showNext, 2000);
+    setInterval(showNext, 2200); // смена каждые ~2.2 секунды
   </script>
 </body>
 </html>
