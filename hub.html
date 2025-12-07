@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Узлы леса</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    .wrapper {
+      text-align: center;
+      padding: 1rem;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      margin-bottom: 14px;
+    }
+
+    p {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      margin-bottom: 22px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 200, 0.45);
+      background: rgba(0, 255, 200, 0.1);
+      color: #e5faff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: 0.25s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn:hover {
+      background: rgba(0, 255, 200, 0.23);
+      border-color: rgba(0, 255, 200, 0.7);
+      text-shadow: 0 0 6px rgba(0, 255, 200, 0.7);
+    }
+
+    .note {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+
+    .final-link {
+      margin-top: 26px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .final-link a {
+      color: #9ad;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>Узлы леса</h1>
+    <p>Каждая строка фрагмента хранит свою часть ответа. Пройди все тропы, чтобы собрать фразу целиком.</p>
+
+    <div class="buttons">
+      <a href="branch-top.html" class="btn">Верхняя строка</a>
+      <a href="branch-mid.html" class="btn">Средняя строка</a>
+      <a href="branch-bottom.html" class="btn">Нижняя строка</a>
+    </div>
+
+    <div class="note">Некоторые подсказки — ловушки. Сверяй фрагменты между собой.</div>
+
+    <div class="final-link">
+      Когда соберёшь три части, переходи к финалу: <a href="final.html">завершить ритуал</a>.
+    </div>
+  </div>
+</body>
+</html>
