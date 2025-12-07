@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Средняя строка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      background: radial-gradient(circle at center, #111 0%, #020308 45%, #000 100%);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: screen;
+      animation: noiseMove 1.5s steps(4) infinite;
+    }
+    @keyframes noiseMove {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-10px, 5px, 0); }
+      50% { transform: translate3d(5px, -10px, 0); }
+      75% { transform: translate3d(-5px, 10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    h1 { font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 14px; }
+    p  { font-size: 0.95rem; opacity: 0.85; margin-bottom: 14px; }
+
+    .line {
+      font-size: 1.4rem;
+      letter-spacing: 0.18em;
+      margin-bottom: 18px;
+    }
+
+    .fake {
+      margin-top: 6px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 0, 128, 0.5);
+      background: rgba(255, 0, 128, 0.08);
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      opacity: 0.82;
+    }
+
+    .code {
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    .back {
+      margin-top: 22px;
+      font-size: 0.85rem;
+    }
+    .back a { color: #9ad; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Средняя строка</h1>
+    <p>Эти символы похожи на руны, но это не алфавит. Это маска смысла.</p>
+
+    <div class="line">⟒⧝⟁⟁⟁⟟⟊</div>
+
+    <div class="fake">
+      Можно пытаться считать углы, придумывать шифр Цезаря и получать набор цифр.<br/>
+      Лес вежливо сообщает: это тупик.
+    </div>
+
+    <p class="hint">
+      Подумай иначе: эта строка стоит <em>между</em> верхней и нижней.<br/>
+      Значит, это слово — действие, происходящее со временем и объектом.
+    </p>
+
+    <div class="code">
+      20:39 &nbsp; ░░░░░░░░░ &nbsp; медведя
+    </div>
+
+    <p class="hint">
+      В легендах о лесных духах чаще всего говорят о трёх вещах:<br/>
+      кара, наказание, <strong>проклятие</strong>.<br/>
+      Выбери то, которое лучше всего звучит между временем и медведем.
+    </p>
+
+    <div class="back">
+      Когда решишь, каким должно быть это слово, возвращайся: <a href="hub.html">назад к узлам леса</a>.
+    </div>
+  </div>
+</body>
+</html>
