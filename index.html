@@ -43,7 +43,7 @@
       pointer-events: none;
     }
 
-    /* ------------ ЛОКАЛЬНЫЙ VHS ШУМ ------------ */
+    /* ------------ VHS ШУМ + СКАН-ЛИНИИ ------------ */
 
     .noise {
       position: fixed;
@@ -62,11 +62,9 @@
     }
 
     @keyframes noiseShift {
-      0% { transform: translate(0,0); }
+      0%   { transform: translate(0,0); }
       100% { transform: translate(-40px, 0); }
     }
-
-    /* ------------ СКАН-ЛИНИИ ------------ */
 
     .scanlines {
       position: fixed;
@@ -92,92 +90,113 @@
       pointer-events: none;
     }
 
-    /* ------------ PLAY ICON ------------ */
+    /* ------------ VHS HUD ------------ */
 
-    .play-icon {
-      position: fixed;
-      top: 30px;
-      left: 40px;
+    body {
+      font-family: "Consolas", "Courier New", monospace;
+    }
+
+    .hud {
+      position: relative;
       z-index: 5;
-      font-size: 2.6rem;
-      font-family: 'Consolas', monospace;
-      letter-spacing: 0.1em;
-      color: #d8fff7;
-      opacity: 0.85;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud-block {
+      position: fixed;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      color: #e8ffff;
       text-shadow:
-        -2px 0 rgba(255,0,128,0.4),
-         2px 0 rgba(0,255,255,0.4),
-         0 0 6px rgba(0,255,200,0.4);
-      filter: blur(0.3px);
+        -1px 0 rgba(255,0,128,0.35),
+         1px 0 rgba(0,255,255,0.35),
+         0 0 4px rgba(0,255,200,0.35);
       user-select: none;
     }
 
-    /* ------------ ТЕКСТ ------------ */
+    /* Левый верх: REC + текущее время */
+    .hud-top-left {
+      top: 24px;
+      left: 30px;
+      text-align: left;
+      line-height: 1.4;
+    }
 
-    .root {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      z-index: 6;
+    .rec-line {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 4px;
+    }
+
+    .rec-label {
+      font-size: 1rem;
+    }
+
+    .rec-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff2b2b;
+      box-shadow:
+        0 0 6px rgba(255,43,43,0.9),
+        0 0 14px rgba(255,43,43,0.6);
+      animation: recBlink 1.2s infinite ease-in-out;
+    }
+
+    @keyframes recBlink {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.45; }
+      100% { opacity: 1; }
+    }
+
+    .rec-time {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* Правый верх: EXCLUSIVELY FROM BY / GREENCRAB */
+    .hud-top-right {
+      top: 24px;
+      right: 30px;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    .hud-top-right .small {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .hud-top-right .brand {
+      font-size: 1rem;
+    }
+
+    /* Правый низ: фиксированная дата/время */
+    .hud-bottom-right {
+      bottom: 28px;
+      right: 30px;
+      text-align: right;
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .hud-bottom-right .time-fixed {
+      font-size: 1rem;
+    }
+
+    /* Центр пустой, только невидимый контейнер для кликов/фокуса */
+    .center {
+      position: fixed;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-    }
-
-    .content {
-      transform: translateY(-14vh);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .time {
-      font-size: clamp(3rem, 8vw, 4.5rem);
-      letter-spacing: 0.22em;
-      margin-bottom: 50px;
-      text-shadow:
-        0 0 4px rgba(0,255,200,0.3),
-        0 0 8px rgba(0,180,255,0.3);
-    }
-
-    .phrases {
-      min-height: 4.6em;
-      min-width: 340px;
-      position: relative;
-    }
-
-    .phrase {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-      font-size: clamp(1.6rem, 4.6vw, 2.9rem);
-      letter-spacing: 0.14em;
-      text-shadow:
-        0 0 4px rgba(0,255,200,0.25),
-        0 0 8px rgba(0,180,255,0.25);
-    }
-
-    .phrase.jp,
-    .phrase.rtl {
-      text-transform: none;
-      letter-spacing: 0.18em;
-    }
-
-    .phrase.rtl {
-      direction: rtl;
-      unicode-bidi: bidi-override;
-    }
-
-    .phrase.active {
-      opacity: 1;
-      transform: translateY(0);
+      pointer-events: none;
     }
   </style>
 </head>
-
 <body>
 
   <video id="bg-video" src="forest.mp4" autoplay loop muted playsinline></video>
@@ -187,46 +206,50 @@
   <div class="scanlines"></div>
   <div class="vignette"></div>
 
-  <!-- VHS PLAY ICON -->
-  <div class="play-icon">PLAY ►</div>
-
-  <div class="root">
-    <div class="content">
-      <div class="time">20:39</div>
-
-      <div class="phrases">
-        <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
-        <div class="phrase">CURSE OF THE BEAR</div>
-        <div class="phrase">DER FLUCH DES BÄREN</div>
-        <div class="phrase jp">熊の呪い</div>
-        <div class="phrase">LA MALDICIÓN DEL OSO</div>
-        <div class="phrase rtl">لَعْنَةُ الدُّبِّ</div>
-        <div class="phrase">MALEDICTIO URSI</div>
-        <div class="phrase">LA MALEDIZIONE DELL’ORSO</div>
-        <div class="phrase">A MALDIÇÃO DO URSO</div>
-        <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
-        <div class="phrase">KARHUN KIROUS</div>
-        <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
-        <div class="phrase">DE VLOEK VAN DE BEER</div>
-        <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
-        <div class="phrase">AYININ LANETI</div>
+  <div class="hud">
+    <!-- Левый верх: REC + текущее время -->
+    <div class="hud-block hud-top-left">
+      <div class="rec-line">
+        <div class="rec-label">REC</div>
+        <div class="rec-dot"></div>
       </div>
-
+      <div class="rec-time" id="rec-time">00:00:00</div>
     </div>
+
+    <!-- Правый верх: надпись про тебя -->
+    <div class="hud-block hud-top-right">
+      <div class="small">EXCLUSIVELY FROM BY</div>
+      <div class="brand">GREENCRAB</div>
+    </div>
+
+    <!-- Правый низ: зафиксированное "ключевое" время и дата -->
+    <div class="hud-block hud-bottom-right">
+      <div class="time-fixed">20:39</div>
+      <div class="date-fixed">14.12.2025 SUN</div>
+    </div>
+
+    <!-- Центр — пусто, только фон-видео -->
+    <div class="center"></div>
   </div>
 
-<script>
-  const phrases = Array.from(document.querySelectorAll('.phrase'));
-  let index = 0;
+  <script>
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
 
-  function showNext() {
-    phrases.forEach(p => p.classList.remove('active'));
-    phrases[index].classList.add('active');
-    index = (index + 1) % phrases.length;
-  }
+    function updateRecTime() {
+      const now = new Date();
+      const h = pad(now.getHours());
+      const m = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+      const el = document.getElementById('rec-time');
+      if (el) {
+        el.textContent = `${h}:${m}:${s}`;
+      }
+    }
 
-  setInterval(showNext, 2600);
-</script>
-
+    updateRecTime();
+    setInterval(updateRecTime, 1000);
+  </script>
 </body>
 </html>
