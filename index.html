@@ -207,7 +207,7 @@
       display: block;
     }
 
-    /* ЛЕВЫЙ НИЗ — фиксированное время/дата (БЕЗ мигания!) */
+    /* ЛЕВЫЙ НИЗ — фиксированное время/дата (без мигания) */
     .hud-bottom-left {
       bottom: 34px;
       left: 32px;
@@ -217,7 +217,7 @@
 
     .hud-bottom-left span {
       display: block;
-      opacity: 1; /* ← Исправление: никакого мигания */
+      opacity: 1;
     }
 
     /* ------------ ЦЕНТРАЛЬНАЯ НАДПИСЬ ------------ */
@@ -314,7 +314,7 @@
       <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
       <div class="phrase">KARHUN KIROUS</div>
       <div class="phrase">BJØRNENS FORBANNELSE</div>
-      <div class="phrase">KLĄTWA НЕДŹWIEDZIA</div>
+      <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
       <div class="phrase">KLETBA MEDVĚDA</div>
       <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
       <div class="phrase">AYININ LANETI</div>
@@ -341,7 +341,7 @@
 
     function showNextPhrase() {
       phrases.forEach(p => p.classList.remove("active"));
-      phrases[index].classList.add("active"));
+      phrases[index].classList.add("active");
       index = (index + 1) % phrases.length;
     }
 
