@@ -43,7 +43,7 @@
       pointer-events: none;
     }
 
-    /* ------------ VHS ШУМ + СКАН-ЛИНИИ ------------ */
+    /* ------------ VHS ШУМ ------------ */
 
     .noise {
       position: fixed;
@@ -90,7 +90,7 @@
       pointer-events: none;
     }
 
-    /* ------------ CRT-ИСКАЖЕНИЕ + TRACKING ------------ */
+    /* ------------ CRT-ИСКАЖЕНИЯ ------------ */
 
     .crt-warp {
       position: fixed;
@@ -136,7 +136,7 @@
       100%     { opacity: 0; transform: translateY(120%); }
     }
 
-    /* ------------ HUD (единый стиль) ------------ */
+    /* ------------ HUD ------------ */
 
     .hud-block {
       position: fixed;
@@ -151,7 +151,7 @@
       z-index: 7;
     }
 
-    /* ЛЕВЫЙ ВЕРХ — REC + живое время */
+    /* ЛЕВЫЙ ВЕРХ */
     .hud-top-left {
       top: 28px;
       left: 32px;
@@ -195,19 +195,22 @@
       55%,100% { opacity: 0.45; }
     }
 
-    /* ПРАВЫЙ ВЕРХ — GREENCRAB */
+    /* ПРАВЫЙ ВЕРХ — адаптация под 9:16 */
     .hud-top-right {
       top: 28px;
-      right: 32px;
+      right: 28px;
       text-align: right;
-      line-height: 1.35;
+      line-height: 1.25;
+      max-width: 40vw;
+      font-size: 1.35rem;
+      letter-spacing: 0.11em;
     }
 
     .hud-top-right span {
       display: block;
     }
 
-    /* ЛЕВЫЙ НИЗ — фиксированное время/дата (без мигания) */
+    /* ЛЕВЫЙ НИЗ */
     .hud-bottom-left {
       bottom: 34px;
       left: 32px;
@@ -256,18 +259,9 @@
       opacity: 1;
       transform: translateY(0);
     }
-
-    .phrase.jp,
-    .phrase.rtl {
-      letter-spacing: 0.18em;
-    }
-
-    .phrase.rtl {
-      direction: rtl;
-      unicode-bidi: bidi-override;
-    }
   </style>
 </head>
+
 <body>
 
   <video id="bg-video" src="forest.mp4" autoplay loop muted playsinline></video>
@@ -289,7 +283,7 @@
   </div>
 
   <div class="hud-block hud-top-right">
-    <span>EXCLUSIVELY FROM BY</span>
+    <span>EXCLUSIVE BY</span>
     <span>GREENCRAB</span>
   </div>
 
@@ -298,54 +292,43 @@
     <span>14.12.2025 SUN</span>
   </div>
 
-  <!-- Центр — фразы -->
+  <!-- Центр -->
   <div class="center">
     <div class="phrases">
       <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
       <div class="phrase">CURSE OF THE BEAR</div>
       <div class="phrase">DER FLUCH DES BÄREN</div>
-      <div class="phrase jp">熊の呪い</div>
+      <div class="phrase">熊の呪い</div>
       <div class="phrase">LA MALDICIÓN DEL OSO</div>
-      <div class="phrase">LA MALÉDICTION DE L’OURS</div>
-      <div class="phrase rtl">لَعْنَةُ الدُّبِّ</div>
-      <div class="phrase">MALEDICTIO URSI</div>
       <div class="phrase">LA MALEDIZIONE DELL’ORSO</div>
-      <div class="phrase">A MALDIÇÃO DO URSO</div>
+      <div class="phrase">MALDIÇÃO DO URSO</div>
       <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
-      <div class="phrase">KARHUN KIROUS</div>
-      <div class="phrase">BJØRNENS FORBANNELSE</div>
-      <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
-      <div class="phrase">KLETBA MEDVĚDA</div>
-      <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
       <div class="phrase">AYININ LANETI</div>
     </div>
   </div>
 
   <script>
-    function pad(n) { return n.toString().padStart(2, '0'); }
+    function pad(n){ return n.toString().padStart(2,'0'); }
 
     function updateRecTime() {
       const now = new Date();
-      const h = pad(now.getHours());
-      const m = pad(now.getMinutes());
-      const s = pad(now.getSeconds());
-      const el = document.getElementById("rec-time");
-      if (el) el.textContent = `${h}:${m}:${s}`;
+      document.getElementById("rec-time").textContent =
+        pad(now.getHours()) + ":" +
+        pad(now.getMinutes()) + ":" +
+        pad(now.getSeconds());
     }
-
-    updateRecTime();
     setInterval(updateRecTime, 1000);
+    updateRecTime();
 
+    /* смена фраз */
     const phrases = Array.from(document.querySelectorAll(".phrase"));
     let index = 0;
 
-    function showNextPhrase() {
+    setInterval(() => {
       phrases.forEach(p => p.classList.remove("active"));
       phrases[index].classList.add("active");
       index = (index + 1) % phrases.length;
-    }
-
-    setInterval(showNextPhrase, 2600);
+    }, 2600);
   </script>
 
 </body>
