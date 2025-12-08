@@ -105,7 +105,6 @@
 
     .hud-block {
       position: fixed;
-      font-size: 0.9rem;
       letter-spacing: 0.12em;
       color: #e8ffff;
       text-shadow:
@@ -121,22 +120,23 @@
       left: 30px;
       text-align: left;
       line-height: 1.4;
+      font-size: 1.05rem;
     }
 
     .rec-line {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 4px;
+      gap: 0.5rem;
+      margin-bottom: 6px;
     }
 
     .rec-label {
-      font-size: 1rem;
+      font-size: 1.3rem;
     }
 
     .rec-dot {
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       background: #ff2b2b;
       box-shadow:
@@ -152,48 +152,95 @@
     }
 
     .rec-time {
-      font-size: 0.95rem;
-      opacity: 0.9;
+      font-size: 1.1rem;
+      opacity: 0.95;
     }
 
-    /* Правый верх: EXCLUSIVELY FROM BY / GREENCRAB */
+    /* Правый верх: EXCLUSIVELY... GREENCRAB */
     .hud-top-right {
       top: 24px;
       right: 30px;
       text-align: right;
       line-height: 1.5;
+      font-size: 1rem;
     }
 
     .hud-top-right .small {
-      font-size: 0.8rem;
-      opacity: 0.9;
+      font-size: 0.95rem;
+      opacity: 0.95;
     }
 
     .hud-top-right .brand {
-      font-size: 1rem;
+      font-size: 1.4rem;
     }
 
-    /* Правый низ: фиксированная дата/время */
-    .hud-bottom-right {
+    /* Левый низ: фиксированное 20:39 / дата */
+    .hud-bottom-left {
       bottom: 28px;
-      right: 30px;
-      text-align: right;
+      left: 30px;
+      text-align: left;
       line-height: 1.4;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
     }
 
-    .hud-bottom-right .time-fixed {
-      font-size: 1rem;
+    .hud-bottom-left .time-fixed {
+      font-size: 1.5rem;
     }
 
-    /* Центр пустой, только невидимый контейнер для кликов/фокуса */
+    .hud-bottom-left .date-fixed {
+      font-size: 1.1rem;
+    }
+
+    /* ------------ ЦЕНТРАЛЬНЫЙ ТЕКСТ ------------ */
+
     .center {
       position: fixed;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 6;
       pointer-events: none;
+    }
+
+    .center-inner {
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .phrases {
+      position: relative;
+      min-width: 360px;
+      min-height: 4.6em;
+    }
+
+    .phrase {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+      font-size: clamp(1.8rem, 4.8vw, 3.1rem);
+      letter-spacing: 0.16em;
+      text-shadow:
+        0 0 6px rgba(0,255,200,0.3),
+        0 0 14px rgba(0,180,255,0.35);
+    }
+
+    .phrase.jp,
+    .phrase.rtl {
+      text-transform: none;
+      letter-spacing: 0.2em;
+    }
+
+    .phrase.rtl {
+      direction: rtl;
+      unicode-bidi: bidi-override;
+    }
+
+    .phrase.active {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -216,20 +263,42 @@
       <div class="rec-time" id="rec-time">00:00:00</div>
     </div>
 
-    <!-- Правый верх: надпись про тебя -->
+    <!-- Правый верх: EXCLUSIVELY FROM BY / GREENCRAB -->
     <div class="hud-block hud-top-right">
       <div class="small">EXCLUSIVELY FROM BY</div>
       <div class="brand">GREENCRAB</div>
     </div>
 
-    <!-- Правый низ: зафиксированное "ключевое" время и дата -->
-    <div class="hud-block hud-bottom-right">
+    <!-- Левый низ: 20:39 / дата -->
+    <div class="hud-block hud-bottom-left">
       <div class="time-fixed">20:39</div>
       <div class="date-fixed">14.12.2025 SUN</div>
     </div>
+  </div>
 
-    <!-- Центр — пусто, только фон-видео -->
-    <div class="center"></div>
+  <!-- Центр: проклятие медведя на разных языках -->
+  <div class="center">
+    <div class="center-inner">
+      <div class="phrases">
+        <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
+        <div class="phrase">CURSE OF THE BEAR</div>
+        <div class="phrase">DER FLUCH DES BÄREN</div>
+        <div class="phrase jp">熊の呪い</div>
+        <div class="phrase">LA MALDICIÓN DEL OSO</div>
+        <div class="phrase">LA MAL&Eacute;DICTION DE L&rsquo;OURS</div>
+        <div class="phrase rtl">لَعْنَةُ الدُّبِّ</div>
+        <div class="phrase">MALEDICTIO URSI</div>
+        <div class="phrase">LA MALEDIZIONE DELL&rsquo;ORSO</div>
+        <div class="phrase">A MALDIÇÃO DO URSO</div>
+        <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
+        <div class="phrase">KARHUN KIROUS</div>
+        <div class="phrase">BJØRNENS FORBANNELSE</div>
+        <div class="phrase">KLĄTWA NIEDŹWIEDZIA</div>
+        <div class="phrase">KLETBA MEDVĚDA</div>
+        <div class="phrase">ПРОКЛЯТТЯ ВЕДМЕДЯ</div>
+        <div class="phrase">AYININ LANETI</div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -250,6 +319,17 @@
 
     updateRecTime();
     setInterval(updateRecTime, 1000);
+
+    const phrases = Array.from(document.querySelectorAll('.phrase'));
+    let index = 0;
+
+    function showNextPhrase() {
+      phrases.forEach(p => p.classList.remove('active'));
+      phrases[index].classList.add('active');
+      index = (index + 1) % phrases.length;
+    }
+
+    setInterval(showNextPhrase, 2600);
   </script>
 </body>
 </html>
