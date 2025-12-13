@@ -2,209 +2,235 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>CURSE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проклятие медведя</title>
 <style>
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  overflow:hidden;
-  cursor:none;
-  font-family: "Arial", sans-serif;
-}
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+        user-select: none;
+    }
 
-/* ======= EYES ======= */
-.eye{
-  position:absolute;
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #fff 0%, #f2e6e6 45%, #c9b6b6 70%, #000 100%);
-  box-shadow:0 0 30px rgba(0,255,220,.15);
-  pointer-events:none;
-}
+    /* Лёгкий шум */
+    body::after {
+        content: "";
+        position: fixed;
+        left:0; top:0; right:0; bottom:0;
+        pointer-events:none;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4AWP4////fwAJ+wP+0pV6VgAAAABJRU5ErkJggg==');
+        opacity: .08;
+        mix-blend-mode: screen;
+    }
 
-.eye::before{
-  content:'';
-  position:absolute;
-  inset:28%;
-  border-radius:50%;
-  background:radial-gradient(circle at center, #000 20%, #3a5f6f 45%, #9fbfca 70%);
-}
+    /* ГЛАЗ */
+    .eye {
+        position: absolute;
+        width: var(--size);
+        height: var(--size);
+        border-radius: 50%;
+        overflow: hidden;
+        pointer-events: none;
+    }
 
-.eye::after{
-  content:'';
-  position:absolute;
-  inset:42%;
-  border-radius:50%;
-  background:#000;
-}
+    .eye .ball {
+        width: 100%;
+        height: 100%;
+        background-image: url("eye.png");
+        background-size: 145%;
+        background-position: 50% 50%;
+        border-radius: 50%;
+        box-shadow:
+            inset 0 0 40px rgba(0,0,0,0.7),
+            0 0 20px rgba(0,200,200,0.25);
+    }
 
-/* ======= BUTTON ======= */
-#breakBtn{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:220px;
-  height:260px;
-  cursor:pointer;
-  z-index:10;
-}
+    /* МИСТИЧЕСКАЯ ЛАПА */
+    .paw {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 230px;
+        height: 260px;
+        cursor: pointer;
+        filter: drop-shadow(0 0 18px #0ff4);
+    }
 
-#breakBtn svg{
-  width:100%;
-  height:100%;
-  filter:drop-shadow(0 0 25px rgba(0,255,220,.3));
-}
+    .paw svg {
+        width: 100%;
+        height: 100%;
+    }
 
-#btnText{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  color:#bffff5;
-  font-weight:600;
-  letter-spacing:.08em;
-  pointer-events:none;
-}
+    .paw:hover {
+        filter: drop-shadow(0 0 28px #0ff);
+        transform: translate(-50%,-50%) scale(1.035);
+    }
 
-#btnText span:first-child{
-  font-size:18px;
-}
+    .paw text {
+        font-size: 18px;
+        fill: #cfffff;
+        font-weight: 700;
+        text-anchor: middle;
+    }
 
-#btnText span:last-child{
-  font-size:12px;
-  opacity:.7;
-}
+    /* Эффект выключения */
+    #shutdown {
+        position: fixed;
+        left:0; top:0; right:0; bottom:0;
+        background:#000;
+        pointer-events:none;
+        opacity:0;
+        transform: scaleY(1);
+        transition: 0.35s ease-out;
+        z-index:999;
+    }
 
-/* ======= TV OFF ======= */
-#tvOff{
-  position:fixed;
-  inset:0;
-  background:#000;
-  transform:scaleY(0);
-  transform-origin:center;
-  transition:transform .6s ease-in;
-  z-index:999;
-}
-#tvOff.active{
-  transform:scaleY(1);
-}
 </style>
 </head>
-
 <body>
 
-<div id="breakBtn">
-  <svg viewBox="0 0 512 512">
-    <defs>
-      <filter id="ink">
-        <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3"/>
-        <feDisplacementMap scale="24"/>
-      </filter>
-      <radialGradient id="mud" cx="50%" cy="35%" r="80%">
-        <stop offset="0%" stop-color="rgba(0,255,220,.25)"/>
-        <stop offset="60%" stop-color="rgba(0,120,110,.2)"/>
-        <stop offset="100%" stop-color="#030707"/>
-      </radialGradient>
-    </defs>
+<!-- ЭКРАН ВЫКЛЮЧЕНИЯ -->
+<div id="shutdown"></div>
 
-    <!-- pad -->
-    <path filter="url(#ink)"
-      d="M256 190
-         C170 200 120 270 130 350
-         C140 440 210 500 256 500
-         C302 500 372 440 382 350
-         C392 270 342 200 256 190 Z"
-      fill="url(#mud)"/>
+<!-- ЛАПА-ЗНАЧОК (симметричный мистический след) -->
+<div class="paw" id="paw">
+    <svg viewBox="0 0 200 230">
+        <!-- Центральный подушечный след -->
+        <ellipse cx="100" cy="150" rx="55" ry="60"
+                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
 
-    <!-- toes -->
-    <g filter="url(#ink)">
-      <path d="M140 160 C100 170 90 210 110 240 C130 270 170 250 170 220 C170 190 160 150 140 160 Z" fill="url(#mud)"/>
-      <path d="M220 120 C180 130 170 190 200 230 C230 270 270 250 260 210 C250 170 240 110 220 120 Z" fill="url(#mud)"/>
-      <path d="M300 120 C270 130 260 180 280 220 C300 260 340 250 340 210 C340 170 320 110 300 120 Z" fill="url(#mud)"/>
-      <path d="M380 160 C360 170 350 200 360 230 C370 260 410 260 420 230 C430 200 400 150 380 160 Z" fill="url(#mud)"/>
-    </g>
-  </svg>
+        <!-- Пальцы -->
+        <ellipse cx="55" cy="75" rx="25" ry="30"
+                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
+        <ellipse cx="95" cy="55" rx="25" ry="30"
+                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
+        <ellipse cx="135" cy="75" rx="25" ry="30"
+                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
 
-  <div id="btnText">
-    <span>РАЗРУШИТЬ ПРОКЛЯТИЕ</span>
-    <span>оставь отпечаток</span>
-  </div>
+        <!-- ТЕКСТ -->
+        <text x="100" y="140">РАЗРУШИТЬ</text>
+        <text x="100" y="162">ПРОКЛЯТИЕ</text>
+        <text x="100" y="185" style="font-size:14px; opacity:.75;">ОСТАВЬ ОТПЕЧАТОК</text>
+    </svg>
 </div>
 
-<div id="tvOff"></div>
-
 <script>
-const eyes=[];
-const EYE_COUNT=12;
+/* ================================
+      ФОТОРЕАЛИСТИЧНЫЕ ГЛАЗА
+   ================================ */
 
-function rand(a,b){return Math.random()*(b-a)+a}
+const EYE_COUNT = 18;
+const EYE_MIN = 90;
+const EYE_MAX = 170;
 
-function spawnEye(){
-  const e=document.createElement('div');
-  e.className='eye';
-  document.body.appendChild(e);
+let eyes = [];
+let pointerX = window.innerWidth / 2;
+let pointerY = window.innerHeight / 2;
 
-  const size=rand(90,160);
-  e.style.width=e.style.height=size+'px';
+/* Создаём глаза с защитой от пересечений */
+function createEyes() {
+    const area = document.body;
 
-  let x,y,ok=false;
-  const btn=document.getElementById('breakBtn').getBoundingClientRect();
+    for (let i = 0; i < EYE_COUNT; i++) {
+        const el = document.createElement("div");
+        el.className = "eye";
 
-  while(!ok){
-    x=rand(0,innerWidth-size);
-    y=rand(0,innerHeight-size);
-    ok=true;
+        const size = Math.round(Math.random() * (EYE_MAX - EYE_MIN) + EYE_MIN);
+        el.style.setProperty("--size", size + "px");
 
-    // button exclusion
-    if(
-      x+size>btn.left-80 &&
-      x<btn.right+80 &&
-      y+size>btn.top-80 &&
-      y<btn.bottom+80
-    ) ok=false;
+        // начальная позиция без пересечений
+        let tries = 0;
+        let x, y, valid;
+        do {
+            x = Math.random() * (window.innerWidth - size);
+            y = Math.random() * (window.innerHeight - size);
+            valid = true;
 
-    // eye overlap
-    for(const o of eyes){
-      const dx=x-o.x;
-      const dy=y-o.y;
-      if(Math.hypot(dx,dy)<(size+o.size)/2+20) ok=false;
+            for (let e of eyes) {
+                const dx = e.x - x;
+                const dy = e.y - y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist < e.size * 0.6 + size * 0.6 ||
+                    Math.hypot(x - window.innerWidth/2, y - window.innerHeight/2) < 250)
+                {
+                    valid = false;
+                    break;
+                }
+            }
+        } while (!valid && tries++ < 200);
+
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+
+        el.innerHTML = `<div class="ball"></div>`;
+
+        area.appendChild(el);
+
+        eyes.push({
+            el,
+            ball: el.querySelector(".ball"),
+            x, y, size,
+            baseX: 50 + (Math.random()*6-3),
+            baseY: 50 + (Math.random()*6-3),
+            drift: (Math.random()*0.7)-0.35
+        });
     }
-  }
-
-  e.style.left=x+'px';
-  e.style.top=y+'px';
-
-  const eye={el:e,x,y,size};
-  eyes.push(eye);
 }
 
-for(let i=0;i<EYE_COUNT;i++) spawnEye();
+function update(t) {
+    for (let e of eyes) {
+        const rect = e.el.getBoundingClientRect();
+        const ex = rect.left + rect.width / 2;
+        const ey = rect.top + rect.height / 2;
 
-document.addEventListener('mousemove',e=>{
-  eyes.forEach(eye=>{
-    const r=eye.el.getBoundingClientRect();
-    const cx=r.left+r.width/2;
-    const cy=r.top+r.height/2;
-    const dx=(e.clientX-cx)/8;
-    const dy=(e.clientY-cy)/8;
-    eye.el.style.transform=`translate(${dx}px,${dy}px)`;
-  });
+        // направление к курсору
+        const dx = pointerX - ex;
+        const dy = pointerY - ey;
+        const dist = Math.max(1, Math.hypot(dx, dy));
+
+        const nx = dx / dist;
+        const ny = dy / dist;
+
+        // сила отклонения (больше, чем раньше)
+        const strength = 9;
+
+        const moveX = nx * strength + e.drift;
+        const moveY = ny * strength * 0.8 + e.drift;
+
+        const bx = e.baseX + moveX;
+        const by = e.baseY + moveY;
+
+        e.ball.style.backgroundPosition = `${bx}% ${by}%`;
+    }
+
+    requestAnimationFrame(update);
+}
+
+window.addEventListener("mousemove", (e) => {
+    pointerX = e.clientX;
+    pointerY = e.clientY;
 });
 
-document.getElementById('breakBtn').onclick=()=>{
-  document.getElementById('tvOff').classList.add('active');
-  setTimeout(()=>document.body.innerHTML='',700);
-};
-</script>
+createEyes();
+requestAnimationFrame(update);
 
+
+/* ================================
+      ЛАПА — ВЫКЛЮЧЕНИЕ ЭКРАНА
+   ================================ */
+
+document.getElementById("paw").addEventListener("click", () => {
+    const shut = document.getElementById("shutdown");
+    shut.style.opacity = 1;
+    shut.style.transform = "scaleY(0)";
+    setTimeout(() => shut.style.transform = "scaleY(0.02)", 300);
+    setTimeout(() => shut.style.opacity = 1, 320);
+    setTimeout(() => shut.style.transform = "scaleY(0)", 600);
+    setTimeout(() => location.href = "about:blank", 900);
+});
+
+</script>
 </body>
 </html>
