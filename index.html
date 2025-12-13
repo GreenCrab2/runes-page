@@ -1,236 +1,175 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Проклятие медведя</title>
+<meta charset="UTF-8" />
+<title>Curse</title>
 <style>
-    html, body {
+    body {
         margin: 0;
-        padding: 0;
-        background: #000;
         overflow: hidden;
-        font-family: 'Inter', sans-serif;
-        user-select: none;
+        background: #000;
+        cursor: none;
     }
 
-    /* Лёгкий шум */
-    body::after {
-        content: "";
-        position: fixed;
-        left:0; top:0; right:0; bottom:0;
-        pointer-events:none;
-        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4AWP4////fwAJ+wP+0pV6VgAAAABJRU5ErkJggg==');
-        opacity: .08;
-        mix-blend-mode: screen;
+    /* —— Центр — кнопка-лапа —— */
+    #paw {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 240px;
+        height: 240px;
+        background: url('paw.png') center/contain no-repeat;
+        cursor: pointer;
+        transition: transform .2s ease;
+    }
+    #paw:hover {
+        transform: translate(-50%, -50%) scale(1.08);
     }
 
-    /* ГЛАЗ */
+    /* —— Глаз — контейнер —— */
     .eye {
         position: absolute;
-        width: var(--size);
-        height: var(--size);
-        border-radius: 50%;
-        overflow: hidden;
+        width: 180px;
+        height: 180px;
+        pointer-events: none;
+        animation: appearDisappear 12s infinite ease-in-out;
+    }
+
+    /* глазное яблоко */
+    .eye img {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 12px #00f2ff55);
+    }
+
+    @keyframes appearDisappear {
+        0% { opacity: 0; transform: scale(.7); }
+        10% { opacity: 1; transform: scale(1); }
+        90% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(.7); }
+    }
+
+    /* —— CRT выключение —— */
+    #crt {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: none;
         pointer-events: none;
     }
-
-    .eye .ball {
-        width: 100%;
-        height: 100%;
-        background-image: url("eye.png");
-        background-size: 145%;
-        background-position: 50% 50%;
-        border-radius: 50%;
-        box-shadow:
-            inset 0 0 40px rgba(0,0,0,0.7),
-            0 0 20px rgba(0,200,200,0.25);
+    .crt-off {
+        display: block !important;
+        animation: crtAnim 0.45s forwards;
     }
 
-    /* МИСТИЧЕСКАЯ ЛАПА */
-    .paw {
-        position: absolute;
-        left: 50%; top: 50%;
-        transform: translate(-50%, -50%);
-        width: 230px;
-        height: 260px;
-        cursor: pointer;
-        filter: drop-shadow(0 0 18px #0ff4);
+    @keyframes crtAnim {
+        0% { opacity: 0; clip-path: inset(0 0 0 0); }
+        40% { opacity: 1; clip-path: inset(48% 0 48% 0); }
+        100% { opacity: 1; clip-path: inset(50% 0 50% 0); }
     }
-
-    .paw svg {
-        width: 100%;
-        height: 100%;
-    }
-
-    .paw:hover {
-        filter: drop-shadow(0 0 28px #0ff);
-        transform: translate(-50%,-50%) scale(1.035);
-    }
-
-    .paw text {
-        font-size: 18px;
-        fill: #cfffff;
-        font-weight: 700;
-        text-anchor: middle;
-    }
-
-    /* Эффект выключения */
-    #shutdown {
-        position: fixed;
-        left:0; top:0; right:0; bottom:0;
-        background:#000;
-        pointer-events:none;
-        opacity:0;
-        transform: scaleY(1);
-        transition: 0.35s ease-out;
-        z-index:999;
-    }
-
 </style>
 </head>
 <body>
 
-<!-- ЭКРАН ВЫКЛЮЧЕНИЯ -->
-<div id="shutdown"></div>
-
-<!-- ЛАПА-ЗНАЧОК (симметричный мистический след) -->
-<div class="paw" id="paw">
-    <svg viewBox="0 0 200 230">
-        <!-- Центральный подушечный след -->
-        <ellipse cx="100" cy="150" rx="55" ry="60"
-                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
-
-        <!-- Пальцы -->
-        <ellipse cx="55" cy="75" rx="25" ry="30"
-                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
-        <ellipse cx="95" cy="55" rx="25" ry="30"
-                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
-        <ellipse cx="135" cy="75" rx="25" ry="30"
-                 fill="#008b7c" opacity="0.9" stroke="#00f5e9" stroke-width="4"/>
-
-        <!-- ТЕКСТ -->
-        <text x="100" y="140">РАЗРУШИТЬ</text>
-        <text x="100" y="162">ПРОКЛЯТИЕ</text>
-        <text x="100" y="185" style="font-size:14px; opacity:.75;">ОСТАВЬ ОТПЕЧАТОК</text>
-    </svg>
-</div>
+<div id="paw"></div>
+<div id="crt"></div>
 
 <script>
-/* ================================
-      ФОТОРЕАЛИСТИЧНЫЕ ГЛАЗА
-   ================================ */
+/* ——————————————————————
+   ЛИМИТЫ И НАСТРОЙКИ
+—————————————————————— */
+const EYE_COUNT = 20;
+const EYES = [];
+const EYE_SIZE = 180;
+const SAFE_RADIUS = 250; // зона вокруг лапы
+const MIN_DIST = 220;    // минимум между глазами
 
-const EYE_COUNT = 18;
-const EYE_MIN = 90;
-const EYE_MAX = 170;
+const paw = document.getElementById("paw");
+const crt = document.getElementById("crt");
 
-let eyes = [];
-let pointerX = window.innerWidth / 2;
-let pointerY = window.innerHeight / 2;
+/* ——————————————————————
+   СОЗДАЁМ ГЛАЗА
+—————————————————————— */
+function placeEyeSafely() {
+    let x, y, safe = false;
+    const sw = window.innerWidth;
+    const sh = window.innerHeight;
 
-/* Создаём глаза с защитой от пересечений */
-function createEyes() {
-    const area = document.body;
+    while (!safe) {
+        x = Math.random() * (sw - EYE_SIZE);
+        y = Math.random() * (sh - EYE_SIZE);
 
+        // не лезть на лапу
+        const dx = x - (sw/2 - EYE_SIZE/2);
+        const dy = y - (sh/2 - EYE_SIZE/2);
+        const distToPaw = Math.sqrt(dx*dx + dy*dy);
+        if (distToPaw < SAFE_RADIUS) continue;
+
+        // не пересекаться с другими глазами
+        safe = true;
+        for (let e of EYES) {
+            const d2 = (e.x - x)**2 + (e.y - y)**2;
+            if (d2 < MIN_DIST*MIN_DIST) {
+                safe = false;
+                break;
+            }
+        }
+    }
+
+    return { x, y };
+}
+
+function spawnEyes() {
     for (let i = 0; i < EYE_COUNT; i++) {
+        const pos = placeEyeSafely();
         const el = document.createElement("div");
         el.className = "eye";
+        el.style.left = pos.x + "px";
+        el.style.top = pos.y + "px";
 
-        const size = Math.round(Math.random() * (EYE_MAX - EYE_MIN) + EYE_MIN);
-        el.style.setProperty("--size", size + "px");
+        el.innerHTML = `<img src="eye.png">`;
+        document.body.appendChild(el);
 
-        // начальная позиция без пересечений
-        let tries = 0;
-        let x, y, valid;
-        do {
-            x = Math.random() * (window.innerWidth - size);
-            y = Math.random() * (window.innerHeight - size);
-            valid = true;
-
-            for (let e of eyes) {
-                const dx = e.x - x;
-                const dy = e.y - y;
-                const dist = Math.hypot(dx, dy);
-
-                if (dist < e.size * 0.6 + size * 0.6 ||
-                    Math.hypot(x - window.innerWidth/2, y - window.innerHeight/2) < 250)
-                {
-                    valid = false;
-                    break;
-                }
-            }
-        } while (!valid && tries++ < 200);
-
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-
-        el.innerHTML = `<div class="ball"></div>`;
-
-        area.appendChild(el);
-
-        eyes.push({
+        EYES.push({
             el,
-            ball: el.querySelector(".ball"),
-            x, y, size,
-            baseX: 50 + (Math.random()*6-3),
-            baseY: 50 + (Math.random()*6-3),
-            drift: (Math.random()*0.7)-0.35
+            x: pos.x,
+            y: pos.y
         });
     }
 }
+spawnEyes();
 
-function update(t) {
-    for (let e of eyes) {
-        const rect = e.el.getBoundingClientRect();
-        const ex = rect.left + rect.width / 2;
-        const ey = rect.top + rect.height / 2;
+/* ——————————————————————
+   ГЛАЗА СЛЕДЯТ ЗА КУРСОРОМ
+—————————————————————— */
+document.addEventListener("mousemove", e => {
+    for (let eye of EYES) {
+        const rect = eye.el.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
 
-        // направление к курсору
-        const dx = pointerX - ex;
-        const dy = pointerY - ey;
-        const dist = Math.max(1, Math.hypot(dx, dy));
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
 
-        const nx = dx / dist;
-        const ny = dy / dist;
+        const angle = Math.atan2(dy, dx);
+        const offset = 14; // сила смещения зрачка
 
-        // сила отклонения (больше, чем раньше)
-        const strength = 9;
-
-        const moveX = nx * strength + e.drift;
-        const moveY = ny * strength * 0.8 + e.drift;
-
-        const bx = e.baseX + moveX;
-        const by = e.baseY + moveY;
-
-        e.ball.style.backgroundPosition = `${bx}% ${by}%`;
+        eye.el.firstChild.style.transform =
+            `translate(${Math.cos(angle)*offset}px, ${Math.sin(angle)*offset}px)`;
     }
-
-    requestAnimationFrame(update);
-}
-
-window.addEventListener("mousemove", (e) => {
-    pointerX = e.clientX;
-    pointerY = e.clientY;
 });
 
-createEyes();
-requestAnimationFrame(update);
-
-
-/* ================================
-      ЛАПА — ВЫКЛЮЧЕНИЕ ЭКРАНА
-   ================================ */
-
-document.getElementById("paw").addEventListener("click", () => {
-    const shut = document.getElementById("shutdown");
-    shut.style.opacity = 1;
-    shut.style.transform = "scaleY(0)";
-    setTimeout(() => shut.style.transform = "scaleY(0.02)", 300);
-    setTimeout(() => shut.style.opacity = 1, 320);
-    setTimeout(() => shut.style.transform = "scaleY(0)", 600);
-    setTimeout(() => location.href = "about:blank", 900);
+/* ——————————————————————
+   КНОПКА — ВЫКЛЮЧЕНИЕ CRT
+—————————————————————— */
+paw.addEventListener("click", () => {
+    crt.classList.add("crt-off");
+    setTimeout(() => {
+        // остаёмся на странице, просто темно
+    }, 600);
 });
-
 </script>
+
 </body>
 </html>
