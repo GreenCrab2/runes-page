@@ -103,7 +103,6 @@
       pointer-events:none;
     }
 
-    /* Реальный глаз = текстура eye.png внутри шара */
     .eye{
       position:absolute;
       width: 180px; height: 180px;
@@ -118,11 +117,12 @@
       transform: translate(-50%,-50%) scale(1);
     }
 
+    /* Реальный глаз = eye.png; движение "зрачка" = background-position */
     .ball{
       position:absolute; inset:0;
       border-radius:50%;
       background-image: url('eye.png');
-      background-size: 135%;          /* запас, чтобы двигать “взгляд” */
+      background-size: 150%;          /* больше запас под сильный взгляд */
       background-position: 50% 50%;
       background-repeat: no-repeat;
       border: 1px solid rgba(255,255,255,.10);
@@ -131,11 +131,10 @@
         inset -16px 10px 26px rgba(0,0,0,.40),
         0 22px 30px rgba(0,0,0,.35);
       overflow:hidden;
-      /* небольшая “стеклянность” */
       filter: saturate(1.05) contrast(1.02);
     }
 
-    /* блики/стекло поверх картинки (не трогаем зрачок!) */
+    /* блики/стекло поверх картинки (не рисуем зрачок!) */
     .ball::before{
       content:"";
       position:absolute; inset:-10%;
@@ -148,7 +147,7 @@
       pointer-events:none;
       transform: rotate(-12deg);
     }
-    /* виньетка + лёгкая хрома */
+
     .ball::after{
       content:"";
       position:absolute; inset:0;
@@ -329,13 +328,14 @@
       setPointer(t.clientX, t.clientY);
     }, {passive:true});
 
+    // ===== Helpers =====
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+    function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+
     // ===== Eyes generation =====
     const eyesLayer = document.getElementById('eyesLayer');
     const EYES_COUNT = 12;
     const eyes = [];
-
-    function rand(min,max){ return Math.random()*(max-min)+min; }
-    function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
 
     function createEye(){
       const el = document.createElement('div');
@@ -345,19 +345,18 @@
 
       const ball = el.querySelector('.ball');
 
-      // СИЛЬНАЯ асимметрия размеров
       const size = rand(120, 260);
       el.style.width = size + 'px';
       el.style.height = size + 'px';
 
-      // наклон
-      el.style.rotate = rand(-10, 10) + 'deg';
+      // сильнее разброс поворота
+      el.style.rotate = rand(-28, 28) + 'deg';
 
       // initial position (иногда обрезается)
       el.style.left = rand(-0.10, 1.10) * window.innerWidth + 'px';
       el.style.top  = rand(-0.08, 1.08) * window.innerHeight + 'px';
 
-      // индивидуальный “центр” картинки, чтобы не были клонами
+      // индивидуальный “центр” картинки
       const baseBgX = rand(46, 54);
       const baseBgY = rand(46, 54);
       ball.style.backgroundPosition = `${baseBgX}% ${baseBgY}%`;
@@ -365,10 +364,10 @@
       const eyeObj = {
         el,
         ball,
+        size,              // важно для анти-оверлапа
         on:false,
-        maxMove: Math.max(10, size * 0.14),
         nextToggle: performance.now() + rand(250, 1600),
-        safeRadius: rand(110, 220),
+        safeRadius: rand(120, 240),    // зона "не лезь к центру" чуть шире
         drift: rand(-0.22, 0.22),
         phase: rand(0, Math.PI*2),
         stareLockUntil: 0,
@@ -386,26 +385,53 @@
       const cx = window.innerWidth/2;
       const cy = window.innerHeight/2;
 
-      let x,y, tries=0;
+      // обновим размер на всякий
+      eye.size = eye.el.getBoundingClientRect().width || eye.size;
+
+      let x, y, tries = 0;
+      const margin = 26; // зазор между глазами
+
+      function overlapsAny(nx, ny){
+        for(const other of eyes){
+          if(other === eye) continue;
+          if(!other.on) continue;
+
+          const ox = parseFloat(other.el.style.left) || 0;
+          const oy = parseFloat(other.el.style.top) || 0;
+
+          const r1 = eye.size/2;
+          const r2 = other.size/2;
+          const minDist = r1 + r2 + margin;
+
+          if(Math.hypot(nx - ox, ny - oy) < minDist) return true;
+        }
+        return false;
+      }
+
       do{
-        const nearCenter = Math.random() < 0.18;
+        const nearCenter = Math.random() < 0.16;
         if(nearCenter){
-          x = cx + rand(-220, 220);
-          y = cy + rand(-180, 180);
+          x = cx + rand(-260, 260);
+          y = cy + rand(-210, 210);
         } else {
           x = rand(-0.12, 1.12) * window.innerWidth;
           y = rand(-0.10, 1.10) * window.innerHeight;
         }
         tries++;
-      } while(tries<18 && Math.hypot(x-cx,y-cy) < eye.safeRadius);
+      } while(
+        tries < 60 &&
+        (Math.hypot(x - cx, y - cy) < eye.safeRadius || overlapsAny(x,y))
+      );
 
       eye.el.style.left = x + 'px';
       eye.el.style.top  = y + 'px';
-      eye.el.style.rotate = rand(-12, 12) + 'deg';
 
-      // каждый раз чуть меняем “центр” картинки, чтобы было живее
-      eye.baseBgX = rand(46, 54);
-      eye.baseBgY = rand(46, 54);
+      // сильнее поворот при каждом появлении
+      eye.el.style.rotate = rand(-34, 34) + 'deg';
+
+      // разнообразим центр текстуры
+      eye.baseBgX = rand(44, 56);
+      eye.baseBgY = rand(44, 56);
       eye.ball.style.backgroundPosition = `${eye.baseBgX}% ${eye.baseBgY}%`;
     }
 
@@ -428,6 +454,7 @@
 
     function updateEyes(t){
       for(const eye of eyes){
+        // toggles
         if(t > eye.nextToggle){
           if(!eye.on && Math.random() < 0.86) toggleEye(eye);
           else if(eye.on && Math.random() < 0.52) toggleEye(eye);
@@ -435,6 +462,7 @@
         }
         if(!eye.on) continue;
 
+        // track pointer
         const rect = eye.el.getBoundingClientRect();
         const ex = rect.left + rect.width/2;
         const ey = rect.top  + rect.height/2;
@@ -448,12 +476,12 @@
         const nx = dx / dist;
         const ny = dy / dist;
 
-        // мягкий дрейф (без ряби)
+        // мягкий дрейф
         const jitter = Math.sin((t/2400) + ex*0.01) * 0.35;
 
-        // “движение взгляда” = сдвиг background-position
-        const moveX = clamp(nx * 5 + jitter, -6, 6);
-        const moveY = clamp(ny * 4 + jitter, -5, 5);
+        // сильнее "косит" (движение background-position)
+        const moveX = clamp(nx * 9 + jitter, -10, 10);
+        const moveY = clamp(ny * 7 + jitter, -9, 9);
 
         if(t < eye.stareLockUntil){
           eye.ball.style.backgroundPosition =
