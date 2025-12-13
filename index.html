@@ -2,334 +2,480 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>20:39</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>...</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: "Consolas", "Courier New", monospace;
-      color: #e8ffff;
+    :root{
+      --hud: #dfffff;
+      --glow: rgba(0, 255, 220, .25);
+      --vhsPink: rgba(255,0,150,.18);
+      --vhsCyan: rgba(0,255,255,.18);
+      --black: #050507;
     }
 
-    /* ------------ ВИДЕО ------------ */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;height:100%;overflow:hidden;background:var(--black);font-family:Consolas,"Courier New",monospace;color:var(--hud);}
 
-    #bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
-      filter:
-        contrast(1.05)
-        brightness(0.9)
-        saturate(0.8)
-        hue-rotate(-10deg)
-        blur(0.3px)
-        drop-shadow(-1px 0 rgba(255, 0, 128, 0.25))
-        drop-shadow(1px 0 rgba(0, 255, 255, 0.25));
+    /* ====== SCREEN WRAP for TV OFF ====== */
+    #screen{
+      position:fixed; inset:0;
+      background: radial-gradient(circle at 50% 35%, rgba(10,12,18,.55), rgba(5,5,7,1) 70%);
+      transform-origin:center;
     }
 
-    .dark-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1;
-      pointer-events: none;
+    /* subtle CRT warp + vignette */
+    #screen::before{
+      content:"";
+      position:absolute; inset:-2%;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.03) 0, transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(0,255,255,.03) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255,0,128,.03) 0, transparent 55%);
+      mix-blend-mode: soft-light;
+      opacity:.9;
+      pointer-events:none;
+      animation: warp 16s ease-in-out infinite;
+    }
+    @keyframes warp{
+      0%{transform:scale(1.01) translate(0,0)}
+      50%{transform:scale(1.018,1.01) translate(1px,-1px)}
+      100%{transform:scale(1.01) translate(0,0)}
     }
 
-    /* ------------ VHS ШУМ ------------ */
-
-    .noise {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0.18;
-      background: repeating-linear-gradient(
-          0deg,
-          rgba(255,255,255,0.03) 0px,
-          rgba(255,255,255,0.03) 1px,
-          rgba(0,0,0,0.03) 1px,
-          rgba(0,0,0,0.03) 3px
-      );
-      animation: noiseShift 8s infinite linear;
-    }
-
-    @keyframes noiseShift {
-      0%   { transform: translate(0,0); }
-      100% { transform: translate(-40px, 0); }
-    }
-
-    .scanlines {
-      position: fixed;
-      inset: 0;
+    /* scanlines */
+    #scanlines{
+      position:fixed; inset:0; pointer-events:none; z-index:5;
       background: repeating-linear-gradient(
         0deg,
-        rgba(0,0,0,0.45) 0px,
-        rgba(0,0,0,0.45) 2px,
+        rgba(0,0,0,.55) 0px,
+        rgba(0,0,0,.55) 2px,
         transparent 3px,
         transparent 6px
       );
-      opacity: 0.4;
-      z-index: 3;
-      pointer-events: none;
-      mix-blend-mode: multiply;
+      opacity:.35;
+      mix-blend-mode:multiply;
     }
 
-    .vignette {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
-      z-index: 4;
-      pointer-events: none;
+    /* noise */
+    #noise{
+      position:fixed; inset:0; pointer-events:none; z-index:6;
+      opacity:.14;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.03) 0px,
+        rgba(255,255,255,.03) 1px,
+        rgba(0,0,0,.03) 1px,
+        rgba(0,0,0,.03) 3px
+      );
+      animation: noiseShift 9s linear infinite;
+    }
+    @keyframes noiseShift{
+      0%{transform:translate(0,0)}
+      100%{transform:translate(-60px,0)}
     }
 
-    /* ------------ CRT-ИСКАЖЕНИЯ ------------ */
-
-    .crt-warp {
-      position: fixed;
-      inset: -2%;
-      z-index: 5;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0, transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(0,255,255,0.04) 0, transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255,0,128,0.04) 0, transparent 55%);
-      mix-blend-mode: soft-light;
-      opacity: 0.8;
-      animation: crtWarp 14s infinite ease-in-out;
-    }
-
-    @keyframes crtWarp {
-      0%   { transform: scale(1.01, 1.01) translate(0,0); }
-      50%  { transform: scale(1.015, 1.008) translate(1px,-1px); }
-      100% { transform: scale(1.01, 1.01) translate(0,0); }
-    }
-
-    .tracking {
-      position: fixed;
-      inset: 0;
-      z-index: 6;
-      pointer-events: none;
-      background: linear-gradient(
-        to bottom,
+    /* occasional tracking band (slow, not nausea) */
+    #tracking{
+      position:fixed; inset:0; pointer-events:none; z-index:7;
+      opacity:0;
+      background: linear-gradient(to bottom,
         transparent 0%,
-        rgba(255,255,255,0.18) 48%,
-        rgba(0,0,0,0.7) 52%,
+        rgba(255,255,255,.12) 48%,
+        rgba(0,0,0,.65) 52%,
         transparent 100%
       );
-      opacity: 0;
-      mix-blend-mode: screen;
-      animation: trackingMove 7s infinite;
+      mix-blend-mode:screen;
+      animation: tracking 8s infinite;
+    }
+    @keyframes tracking{
+      0%,72%{opacity:0;transform:translateY(-120%)}
+      78%{opacity:.35;transform:translateY(-10%)}
+      92%{opacity:.18;transform:translateY(55%)}
+      100%{opacity:0;transform:translateY(130%)}
     }
 
-    @keyframes trackingMove {
-      0%,75%   { opacity: 0; transform: translateY(-100%); }
-      80%      { opacity: 0.45; transform: translateY(-10%); }
-      90%      { opacity: 0.25; transform: translateY(60%); }
-      100%     { opacity: 0; transform: translateY(120%); }
+    /* ====== Eyes layer ====== */
+    #eyesLayer{
+      position:fixed; inset:0; z-index:10;
+      pointer-events:none;
     }
 
-    /* ------------ HUD ------------ */
-
-    .hud-block {
-      position: fixed;
-      letter-spacing: 0.12em;
-      color: #e8ffff;
-      font-size: 1.4rem;
-      text-shadow:
-        -1px 0 rgba(255,0,128,0.35),
-         1px 0 rgba(0,255,255,0.35),
-         0 0 4px rgba(0,255,200,0.35);
-      user-select: none;
-      z-index: 7;
+    .eye{
+      position:absolute;
+      width: 110px; height: 58px;
+      opacity:0;
+      transform: translate(-50%,-50%) scale(.95);
+      filter: drop-shadow(0 0 10px rgba(0,255,220,.12));
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .eye.on{
+      opacity:1;
+      transform: translate(-50%,-50%) scale(1);
     }
 
-    /* ЛЕВЫЙ ВЕРХ */
-    .hud-top-left {
-      top: 28px;
-      left: 32px;
-      line-height: 1.35;
-    }
-
-    .rec-line {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      margin-bottom: 6px;
-    }
-
-    .rec-label {
-      font-size: 1.4rem;
-    }
-
-    .rec-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #ff2b2b;
+    /* the sclera */
+    .eye .white{
+      position:absolute; inset:0;
+      border-radius: 999px;
+      background: radial-gradient(circle at 50% 40%, rgba(230,255,255,.35), rgba(230,255,255,.12) 45%, rgba(10,12,18,.75) 78%);
+      border: 1px solid rgba(255,255,255,.10);
       box-shadow:
-        0 0 8px rgba(255,43,43,0.95),
-        0 0 18px rgba(255,43,43,0.7);
-      animation: recBlink 1.2s infinite ease-in-out;
+        -1px 0 0 var(--vhsPink),
+         1px 0 0 var(--vhsCyan),
+         0 0 18px rgba(0,255,220,.08);
+      overflow:hidden;
     }
 
-    @keyframes recBlink {
-      0%   { opacity: 1; }
-      50%  { opacity: 0.48; }
-      100% { opacity: 1; }
+    /* eyelids (blink) */
+    .eye .lid{
+      position:absolute; inset:-2px;
+      border-radius:999px;
+      background: rgba(5,5,7,.92);
+      transform: translateY(110%);
+      animation: none;
+      mix-blend-mode: normal;
+    }
+    .eye.blink .lid{
+      animation: blink 3.8s infinite;
+    }
+    @keyframes blink{
+      0%,88%,100%{transform:translateY(110%)}
+      90%{transform:translateY(0%)}
+      92%{transform:translateY(110%)}
+      95%{transform:translateY(0%)}
+      97%{transform:translateY(110%)}
     }
 
-    .rec-time {
-      animation: timeBlink 1s infinite steps(2);
+    /* iris/pupil */
+    .eye .iris{
+      position:absolute;
+      left:50%; top:50%;
+      width: 28px; height: 28px;
+      border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, rgba(120,255,240,.9), rgba(0,255,220,.35) 45%, rgba(0,0,0,.85) 70%);
+      box-shadow: 0 0 14px rgba(0,255,220,.18);
+      transform: translate(-50%,-50%);
+      will-change: transform;
+    }
+    .eye .pupil{
+      position:absolute;
+      left:50%; top:50%;
+      width: 10px; height: 10px;
+      border-radius:50%;
+      background: rgba(0,0,0,.95);
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 6px rgba(0,0,0,.6);
+    }
+    .eye .glint{
+      position:absolute;
+      left:40%; top:38%;
+      width: 6px; height: 6px;
+      border-radius:50%;
+      background: rgba(255,255,255,.55);
+      filter: blur(.2px);
     }
 
-    @keyframes timeBlink {
-      0%,45% { opacity: 1; }
-      55%,100% { opacity: 0.45; }
+    /* ====== Center button ====== */
+    #center{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      z-index:20;
+      pointer-events:none;
     }
 
-    /* ПРАВЫЙ ВЕРХ — адаптация под 9:16 */
-    .hud-top-right {
-      top: 28px;
-      right: 28px;
-      text-align: right;
-      line-height: 1.25;
-      max-width: 40vw;
-      font-size: 1.35rem;
-      letter-spacing: 0.11em;
+    .pawBtn{
+      pointer-events:auto;
+      cursor:pointer;
+      border:none;
+      background:transparent;
+      transform: translateZ(0);
     }
 
-    .hud-top-right span {
-      display: block;
+    .pawWrap{
+      position:relative;
+      width:min(320px, 78vw);
+      aspect-ratio: 1 / 1;
+      display:grid;
+      place-items:center;
+      filter: drop-shadow(0 0 18px rgba(0,255,220,.12));
     }
 
-    /* ЛЕВЫЙ НИЗ */
-    .hud-bottom-left {
-      bottom: 34px;
-      left: 32px;
-      text-align: left;
-      line-height: 1.3;
-    }
-
-    .hud-bottom-left span {
-      display: block;
-      opacity: 1;
-    }
-
-    /* ------------ ЦЕНТРАЛЬНАЯ НАДПИСЬ ------------ */
-
-    .center {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 8;
-      pointer-events: none;
-    }
-
-    .phrases {
-      position: relative;
-      min-width: 380px;
-      min-height: 4.9em;
-    }
-
-    .phrase {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.45s ease-out, transform 0.45s ease-out;
-      font-size: clamp(2.1rem, 5vw, 3.3rem);
-      letter-spacing: 0.16em;
+    /* paw shape via SVG */
+    .pawWrap svg{width:100%;height:100%}
+    .pawText{
+      position:absolute;
+      width:70%;
+      text-align:center;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color: var(--hud);
       text-shadow:
-        0 0 6px rgba(0,255,200,0.35),
-        0 0 14px rgba(0,180,255,0.35);
-      text-align: center;
+        -1px 0 var(--vhsPink),
+         1px 0 var(--vhsCyan),
+         0 0 14px rgba(0,255,220,.18);
+      line-height:1.15;
+      font-size: clamp(14px, 3.2vw, 18px);
+      user-select:none;
     }
 
-    .phrase.active {
-      opacity: 1;
-      transform: translateY(0);
+    .pawSub{
+      display:block;
+      margin-top:8px;
+      opacity:.7;
+      font-weight:600;
+      font-size: .82em;
+      letter-spacing:.12em;
     }
+
+    .pawBtn:hover .pawText{ text-shadow: 0 0 18px rgba(0,255,220,.28), -1px 0 var(--vhsPink), 1px 0 var(--vhsCyan); }
+    .pawBtn:active{ transform: scale(.98); }
+
+    /* ====== TV OFF animation ====== */
+    .tvOff{
+      animation: tvOff 750ms cubic-bezier(.2,.9,.2,1) forwards;
+    }
+    @keyframes tvOff{
+      0%{
+        transform: scale(1);
+        filter: brightness(1);
+        opacity: 1;
+      }
+      55%{
+        transform: scaleY(0.03) scaleX(1.02);
+        filter: brightness(1.4) contrast(1.2);
+        opacity: 1;
+      }
+      70%{
+        transform: scaleY(0.01) scaleX(0.02);
+        filter: brightness(2) contrast(1.4);
+        opacity: 1;
+      }
+      100%{
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* After off: black */
+    #blackout{
+      position:fixed; inset:0; background:#000; z-index:999;
+      opacity:0; pointer-events:none;
+      transition: opacity .2s ease;
+    }
+    #blackout.on{ opacity:1; }
+
+    /* Mobile safe area */
+    @supports(padding: max(0px)) {
+      .hudSafe { padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); }
+    }
+
+    /* (optional) tiny hint text hidden */
+    .sr{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;}
   </style>
 </head>
-
 <body>
+  <div id="screen">
+    <div id="eyesLayer"></div>
 
-  <video id="bg-video" src="forest.mp4" autoplay loop muted playsinline></video>
+    <div id="center">
+      <button class="pawBtn" id="breakBtn" aria-label="Разрушить проклятие">
+        <div class="pawWrap">
+          <svg viewBox="0 0 512 512" aria-hidden="true">
+            <!-- Pads -->
+            <defs>
+              <radialGradient id="pad" cx="35%" cy="35%" r="75%">
+                <stop offset="0%" stop-color="rgba(230,255,255,0.25)"/>
+                <stop offset="35%" stop-color="rgba(0,255,220,0.12)"/>
+                <stop offset="100%" stop-color="rgba(5,5,7,0.90)"/>
+              </radialGradient>
+            </defs>
 
-  <div class="dark-overlay"></div>
-  <div class="noise"></div>
-  <div class="scanlines"></div>
-  <div class="vignette"></div>
-  <div class="crt-warp"></div>
-  <div class="tracking"></div>
+            <!-- toes -->
+            <ellipse cx="150" cy="135" rx="52" ry="66" fill="url(#pad)" stroke="rgba(255,255,255,0.08)" />
+            <ellipse cx="242" cy="102" rx="54" ry="68" fill="url(#pad)" stroke="rgba(255,255,255,0.08)" />
+            <ellipse cx="334" cy="120" rx="54" ry="70" fill="url(#pad)" stroke="rgba(255,255,255,0.08)" />
+            <ellipse cx="412" cy="175" rx="50" ry="66" fill="url(#pad)" stroke="rgba(255,255,255,0.08)" />
 
-  <!-- HUD -->
-  <div class="hud-block hud-top-left">
-    <div class="rec-line">
-      <div class="rec-label">REC</div>
-      <div class="rec-dot"></div>
+            <!-- main pad -->
+            <path d="M256 190
+                     C190 190 124 245 124 325
+                     C124 411 188 472 256 472
+                     C324 472 388 411 388 325
+                     C388 245 322 190 256 190 Z"
+                  fill="url(#pad)" stroke="rgba(255,255,255,0.10)"/>
+
+            <!-- VHS edge glow -->
+            <path d="M256 190
+                     C190 190 124 245 124 325
+                     C124 411 188 472 256 472
+                     C324 472 388 411 388 325
+                     C388 245 322 190 256 190 Z"
+                  fill="none" stroke="rgba(0,255,220,0.18)" stroke-width="3"/>
+          </svg>
+
+          <div class="pawText">
+            РАЗРУШИТЬ<br/>ПРОКЛЯТИЕ
+            <span class="pawSub">не нажимай дважды</span>
+          </div>
+        </div>
+      </button>
     </div>
-    <div class="rec-time" id="rec-time">00:00:00</div>
+
+    <div id="scanlines"></div>
+    <div id="noise"></div>
+    <div id="tracking"></div>
   </div>
 
-  <div class="hud-block hud-top-right">
-    <span>EXCLUSIVE BY</span>
-    <span>GREENCRAB</span>
-  </div>
-
-  <div class="hud-block hud-bottom-left">
-    <span>20:39</span>
-    <span>14.12.2025 SUN</span>
-  </div>
-
-  <!-- Центр -->
-  <div class="center">
-    <div class="phrases">
-      <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
-      <div class="phrase">CURSE OF THE BEAR</div>
-      <div class="phrase">DER FLUCH DES BÄREN</div>
-      <div class="phrase">熊の呪い</div>
-      <div class="phrase">LA MALDICIÓN DEL OSO</div>
-      <div class="phrase">LA MALEDIZIONE DELL’ORSO</div>
-      <div class="phrase">MALDIÇÃO DO URSO</div>
-      <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
-      <div class="phrase">AYININ LANETI</div>
-    </div>
-  </div>
+  <div id="blackout"></div>
 
   <script>
-    function pad(n){ return n.toString().padStart(2,'0'); }
+    // ===== Pointer tracking =====
+    let pointerX = window.innerWidth * 0.5;
+    let pointerY = window.innerHeight * 0.5;
 
-    function updateRecTime() {
-      const now = new Date();
-      document.getElementById("rec-time").textContent =
-        pad(now.getHours()) + ":" +
-        pad(now.getMinutes()) + ":" +
-        pad(now.getSeconds());
+    function setPointer(x,y){ pointerX=x; pointerY=y; }
+
+    window.addEventListener('mousemove', (e)=> setPointer(e.clientX,e.clientY), {passive:true});
+    window.addEventListener('touchstart', (e)=>{
+      const t = e.touches[0]; if(!t) return;
+      setPointer(t.clientX, t.clientY);
+    }, {passive:true});
+    window.addEventListener('touchmove', (e)=>{
+      const t = e.touches[0]; if(!t) return;
+      setPointer(t.clientX, t.clientY);
+    }, {passive:true});
+
+    // ===== Eyes generation =====
+    const eyesLayer = document.getElementById('eyesLayer');
+    const EYES_COUNT = 14; // how many can exist
+    const eyes = [];
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function createEye(){
+      const el = document.createElement('div');
+      el.className = 'eye blink';
+      el.innerHTML = `
+        <div class="white">
+          <div class="iris"><div class="pupil"></div><div class="glint"></div></div>
+          <div class="lid"></div>
+        </div>
+      `;
+      eyesLayer.appendChild(el);
+
+      const size = rand(70, 150);
+      el.style.width = size + 'px';
+      el.style.height = (size * 0.54) + 'px';
+
+      // initial position (offscreen until activated)
+      el.style.left = rand(8, 92) + 'vw';
+      el.style.top  = rand(12, 88) + 'vh';
+
+      // some eyes blink slower/faster
+      if(Math.random() < 0.45){
+        el.classList.remove('blink');
+      } else {
+        // randomize blink duration by injecting style
+        el.querySelector('.lid').style.animationDuration = rand(3.2, 6.5) + 's';
+      }
+
+      const iris = el.querySelector('.iris');
+
+      const eyeObj = {
+        el, iris,
+        on:false,
+        // tracking radius
+        maxMove: Math.max(8, size * 0.10),
+        // when to toggle
+        nextToggle: performance.now() + rand(400, 2200),
+        // avoid center button zone
+        safeRadius: rand(140, 220)
+      };
+      eyes.push(eyeObj);
+      return eyeObj;
     }
-    setInterval(updateRecTime, 1000);
-    updateRecTime();
 
-    /* смена фраз */
-    const phrases = Array.from(document.querySelectorAll(".phrase"));
-    let index = 0;
+    for(let i=0;i<EYES_COUNT;i++) createEye();
 
-    setInterval(() => {
-      phrases.forEach(p => p.classList.remove("active"));
-      phrases[index].classList.add("active");
-      index = (index + 1) % phrases.length;
-    }, 2600);
+    function toggleEye(eye){
+      // pick a new position, avoid center (paranoia but readable)
+      const cx = window.innerWidth/2;
+      const cy = window.innerHeight/2;
+
+      let x,y, tries=0;
+      do{
+        x = rand(0.07, 0.93) * window.innerWidth;
+        y = rand(0.12, 0.88) * window.innerHeight;
+        tries++;
+      } while(tries<25 && Math.hypot(x-cx,y-cy) < eye.safeRadius);
+
+      eye.el.style.left = x + 'px';
+      eye.el.style.top  = y + 'px';
+
+      eye.on = !eye.on;
+      if(eye.on){
+        eye.el.classList.add('on');
+        eye.nextToggle = performance.now() + rand(1200, 4200);
+      } else {
+        eye.el.classList.remove('on');
+        eye.nextToggle = performance.now() + rand(700, 2600);
+      }
+    }
+
+    function updateEyes(t){
+      for(const eye of eyes){
+        if(t > eye.nextToggle){
+          // more often appear than disappear (paranoia)
+          if(!eye.on && Math.random() < 0.82) toggleEye(eye);
+          else if(eye.on && Math.random() < 0.55) toggleEye(eye);
+          else eye.nextToggle = t + rand(500, 1800);
+        }
+
+        if(!eye.on) continue;
+
+        const rect = eye.el.getBoundingClientRect();
+        const ex = rect.left + rect.width/2;
+        const ey = rect.top  + rect.height/2;
+
+        const dx = pointerX - ex;
+        const dy = pointerY - ey;
+
+        const dist = Math.max(1, Math.hypot(dx,dy));
+        const nx = dx / dist;
+        const ny = dy / dist;
+
+        // slightly "nervous" eye drift
+        const jitter = (Math.sin((t/1000) + ex*0.01) * 0.25);
+
+        const mx = (nx * eye.maxMove) + jitter;
+        const my = (ny * eye.maxMove * 0.65) + jitter;
+
+        eye.iris.style.transform = `translate(calc(-50% + ${mx}px), calc(-50% + ${my}px))`;
+      }
+
+      requestAnimationFrame(updateEyes);
+    }
+    requestAnimationFrame(updateEyes);
+
+    // ===== TV OFF =====
+    const btn = document.getElementById('breakBtn');
+    const screen = document.getElementById('screen');
+    const blackout = document.getElementById('blackout');
+
+    let off = false;
+    btn.addEventListener('click', ()=>{
+      if(off) return;
+      off = true;
+
+      // Stop "life" slightly before turning off
+      eyesLayer.style.opacity = '0.85';
+
+      // TV off animation
+      screen.classList.add('tvOff');
+
+      // ensure black after
+      setTimeout(()=> blackout.classList.add('on'), 650);
+    });
   </script>
-
 </body>
 </html>
