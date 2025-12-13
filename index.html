@@ -1,519 +1,210 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>...</title>
-  <style>
-    :root{
-      --hud: #dfffff;
-      --vhsPink: rgba(255,0,150,.18);
-      --vhsCyan: rgba(0,255,255,.18);
-      --black: #050507;
-      --eyeGlow: rgba(0,255,220,.08);
-    }
+<meta charset="UTF-8">
+<title>CURSE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  cursor:none;
+  font-family: "Arial", sans-serif;
+}
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{
-      width:100%;height:100%;overflow:hidden;background:var(--black);
-      font-family:Consolas,"Courier New",monospace;color:var(--hud);
-    }
+/* ======= EYES ======= */
+.eye{
+  position:absolute;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff 0%, #f2e6e6 45%, #c9b6b6 70%, #000 100%);
+  box-shadow:0 0 30px rgba(0,255,220,.15);
+  pointer-events:none;
+}
 
-    /* ===== SCREEN WRAP for TV OFF ===== */
-    #screen{
-      position:fixed; inset:0;
-      background: radial-gradient(circle at 50% 35%, rgba(10,12,18,.55), rgba(5,5,7,1) 70%);
-      transform-origin:center;
-    }
+.eye::before{
+  content:'';
+  position:absolute;
+  inset:28%;
+  border-radius:50%;
+  background:radial-gradient(circle at center, #000 20%, #3a5f6f 45%, #9fbfca 70%);
+}
 
-    /* subtle CRT warp + vignette */
-    #screen::before{
-      content:"";
-      position:absolute; inset:-2%;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,.03) 0, transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(0,255,255,.03) 0, transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255,0,128,.03) 0, transparent 55%);
-      mix-blend-mode: soft-light;
-      opacity:.9;
-      pointer-events:none;
-      animation: warp 16s ease-in-out infinite;
-    }
-    @keyframes warp{
-      0%{transform:scale(1.01) translate(0,0)}
-      50%{transform:scale(1.018,1.01) translate(1px,-1px)}
-      100%{transform:scale(1.01) translate(0,0)}
-    }
+.eye::after{
+  content:'';
+  position:absolute;
+  inset:42%;
+  border-radius:50%;
+  background:#000;
+}
 
-    /* scanlines (мягко) */
-    #scanlines{
-      position:fixed; inset:0; pointer-events:none; z-index:5;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,.50) 0px,
-        rgba(0,0,0,.50) 2px,
-        transparent 3px,
-        transparent 7px
-      );
-      opacity:.28;
-      mix-blend-mode:multiply;
-    }
+/* ======= BUTTON ======= */
+#breakBtn{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:220px;
+  height:260px;
+  cursor:pointer;
+  z-index:10;
+}
 
-    /* noise (без дёрганья) */
-    #noise{
-      position:fixed; inset:0; pointer-events:none; z-index:6;
-      opacity:.10;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,.03) 0px,
-        rgba(255,255,255,.03) 1px,
-        rgba(0,0,0,.03) 1px,
-        rgba(0,0,0,.03) 3px
-      );
-      animation: noiseShift 14s linear infinite;
-    }
-    @keyframes noiseShift{
-      0%{transform:translate(0,0)}
-      100%{transform:translate(-120px,0)}
-    }
+#breakBtn svg{
+  width:100%;
+  height:100%;
+  filter:drop-shadow(0 0 25px rgba(0,255,220,.3));
+}
 
-    /* slow tracking band (редко) */
-    #tracking{
-      position:fixed; inset:0; pointer-events:none; z-index:7;
-      opacity:0;
-      background: linear-gradient(to bottom,
-        transparent 0%,
-        rgba(255,255,255,.10) 48%,
-        rgba(0,0,0,.60) 52%,
-        transparent 100%
-      );
-      mix-blend-mode:screen;
-      animation: tracking 12s infinite;
-    }
-    @keyframes tracking{
-      0%,78%{opacity:0;transform:translateY(-120%)}
-      84%{opacity:.22;transform:translateY(-12%)}
-      95%{opacity:.12;transform:translateY(62%)}
-      100%{opacity:0;transform:translateY(130%)}
-    }
+#btnText{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#bffff5;
+  font-weight:600;
+  letter-spacing:.08em;
+  pointer-events:none;
+}
 
-    /* ===== Eyes layer ===== */
-    #eyesLayer{
-      position:fixed; inset:0; z-index:10;
-      pointer-events:none;
-    }
+#btnText span:first-child{
+  font-size:18px;
+}
 
-    .eye{
-      position:absolute;
-      width: 180px; height: 180px;
-      opacity:0;
-      transform: translate(-50%,-50%) scale(.98);
-      transition: opacity .9s ease, transform .9s ease;
-      filter: drop-shadow(0 0 16px var(--eyeGlow));
-      will-change: transform;
-    }
-    .eye.on{
-      opacity:1;
-      transform: translate(-50%,-50%) scale(1);
-    }
+#btnText span:last-child{
+  font-size:12px;
+  opacity:.7;
+}
 
-    /* Реальный глаз = eye.png; движение "зрачка" = background-position */
-    .ball{
-      position:absolute; inset:0;
-      border-radius:50%;
-      background-image: url('eye.png');
-      background-size: 150%;          /* больше запас под сильный взгляд */
-      background-position: 50% 50%;
-      background-repeat: no-repeat;
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow:
-        inset 0 0 32px rgba(0,0,0,.55),
-        inset -16px 10px 26px rgba(0,0,0,.40),
-        0 22px 30px rgba(0,0,0,.35);
-      overflow:hidden;
-      filter: saturate(1.05) contrast(1.02);
-    }
-
-    /* блики/стекло поверх картинки (не рисуем зрачок!) */
-    .ball::before{
-      content:"";
-      position:absolute; inset:-10%;
-      border-radius:50%;
-      background:
-        radial-gradient(circle at 32% 28%, rgba(255,255,255,.28), transparent 35%),
-        radial-gradient(circle at 62% 72%, rgba(255,255,255,.07), transparent 48%);
-      mix-blend-mode: screen;
-      opacity:.75;
-      pointer-events:none;
-      transform: rotate(-12deg);
-    }
-
-    .ball::after{
-      content:"";
-      position:absolute; inset:0;
-      border-radius:50%;
-      box-shadow:
-        inset 0 0 0 2px rgba(0,255,255,.05),
-        inset 0 0 0 4px rgba(255,0,150,.04),
-        inset 0 0 26px rgba(0,0,0,.70);
-      pointer-events:none;
-    }
-
-    /* ===== Center button (bear footprint) ===== */
-    #center{
-      position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      z-index:20;
-      pointer-events:none;
-    }
-    .pawBtn{
-      pointer-events:auto;
-      cursor:pointer;
-      border:none;
-      background:transparent;
-      transform: translateZ(0);
-    }
-    .pawWrap{
-      position:relative;
-      width:min(340px, 84vw);
-      aspect-ratio: 1 / 1;
-      display:grid;
-      place-items:center;
-      filter: drop-shadow(0 0 22px rgba(0,255,220,.10));
-    }
-    .pawWrap svg{width:100%;height:100%}
-
-    .pawText{
-      position:absolute;
-      width:72%;
-      text-align:center;
-      font-weight:900;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color: var(--hud);
-      text-shadow:
-        -1px 0 var(--vhsPink),
-         1px 0 var(--vhsCyan),
-         0 0 14px rgba(0,255,220,.14);
-      line-height:1.15;
-      font-size: clamp(14px, 3.3vw, 18px);
-      user-select:none;
-      opacity:.92;
-    }
-    .pawSub{
-      display:block;
-      margin-top:10px;
-      opacity:.70;
-      font-weight:800;
-      font-size: .82em;
-      letter-spacing:.12em;
-    }
-    .pawBtn:active{ transform: scale(.985); }
-
-    /* ===== TV OFF animation ===== */
-    .tvOff{
-      animation: tvOff 760ms cubic-bezier(.2,.9,.2,1) forwards;
-    }
-    @keyframes tvOff{
-      0%{ transform: scale(1); filter: brightness(1); opacity: 1; }
-      55%{
-        transform: scaleY(0.03) scaleX(1.02);
-        filter: brightness(1.35) contrast(1.15);
-        opacity: 1;
-      }
-      70%{
-        transform: scaleY(0.01) scaleX(0.02);
-        filter: brightness(1.9) contrast(1.3);
-        opacity: 1;
-      }
-      100%{ transform: scale(0); opacity: 0; }
-    }
-
-    #blackout{
-      position:fixed; inset:0; background:#000; z-index:999;
-      opacity:0; pointer-events:none;
-      transition: opacity .2s ease;
-    }
-    #blackout.on{ opacity:1; }
-  </style>
+/* ======= TV OFF ======= */
+#tvOff{
+  position:fixed;
+  inset:0;
+  background:#000;
+  transform:scaleY(0);
+  transform-origin:center;
+  transition:transform .6s ease-in;
+  z-index:999;
+}
+#tvOff.active{
+  transform:scaleY(1);
+}
+</style>
 </head>
+
 <body>
-  <div id="screen">
-    <div id="eyesLayer"></div>
 
-    <div id="center">
-      <button class="pawBtn" id="breakBtn" aria-label="Разрушить проклятие">
-        <div class="pawWrap">
-          <!-- BEAR FOOTPRINT (muddy imprint) -->
-          <svg viewBox="0 0 512 512" aria-hidden="true">
-            <defs>
-              <radialGradient id="mud" cx="35%" cy="30%" r="80%">
-                <stop offset="0%" stop-color="rgba(230,255,255,0.14)"/>
-                <stop offset="35%" stop-color="rgba(0,255,220,0.08)"/>
-                <stop offset="100%" stop-color="rgba(5,5,7,0.94)"/>
-              </radialGradient>
-              <filter id="rough">
-                <feTurbulence type="fractalNoise" baseFrequency="0.020" numOctaves="2" seed="7" result="n"/>
-                <feDisplacementMap in="SourceGraphic" in2="n" scale="12" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-            </defs>
+<div id="breakBtn">
+  <svg viewBox="0 0 512 512">
+    <defs>
+      <filter id="ink">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3"/>
+        <feDisplacementMap scale="24"/>
+      </filter>
+      <radialGradient id="mud" cx="50%" cy="35%" r="80%">
+        <stop offset="0%" stop-color="rgba(0,255,220,.25)"/>
+        <stop offset="60%" stop-color="rgba(0,120,110,.2)"/>
+        <stop offset="100%" stop-color="#030707"/>
+      </radialGradient>
+    </defs>
 
-            <!-- toes -->
-            <path filter="url(#rough)"
-              d="M145 150c-28 0-48 23-48 51s17 57 43 57c27 0 50-24 50-54s-17-54-45-54z"
-              fill="url(#mud)" stroke="rgba(255,255,255,0.06)" />
-            <path filter="url(#rough)"
-              d="M235 120c-30 0-54 23-54 55s21 63 50 63c31 0 56-26 56-60s-20-58-52-58z"
-              fill="url(#mud)" stroke="rgba(255,255,255,0.06)" />
-            <path filter="url(#rough)"
-              d="M325 130c-30 0-55 22-55 54s21 64 50 64c31 0 57-26 57-61s-20-57-52-57z"
-              fill="url(#mud)" stroke="rgba(255,255,255,0.06)" />
-            <path filter="url(#rough)"
-              d="M405 180c-26 0-46 21-46 49s16 58 41 58c27 0 48-25 48-55s-16-52-43-52z"
-              fill="url(#mud)" stroke="rgba(255,255,255,0.06)" />
+    <!-- pad -->
+    <path filter="url(#ink)"
+      d="M256 190
+         C170 200 120 270 130 350
+         C140 440 210 500 256 500
+         C302 500 372 440 382 350
+         C392 270 342 200 256 190 Z"
+      fill="url(#mud)"/>
 
-            <!-- main pad -->
-            <path filter="url(#rough)"
-              d="M256 205
-                 C186 205 120 260 120 338
-                 C120 434 188 486 256 486
-                 C324 486 392 434 392 338
-                 C392 260 326 205 256 205 Z"
-              fill="url(#mud)" stroke="rgba(255,255,255,0.08)" />
+    <!-- toes -->
+    <g filter="url(#ink)">
+      <path d="M140 160 C100 170 90 210 110 240 C130 270 170 250 170 220 C170 190 160 150 140 160 Z" fill="url(#mud)"/>
+      <path d="M220 120 C180 130 170 190 200 230 C230 270 270 250 260 210 C250 170 240 110 220 120 Z" fill="url(#mud)"/>
+      <path d="M300 120 C270 130 260 180 280 220 C300 260 340 250 340 210 C340 170 320 110 300 120 Z" fill="url(#mud)"/>
+      <path d="M380 160 C360 170 350 200 360 230 C370 260 410 260 420 230 C430 200 400 150 380 160 Z" fill="url(#mud)"/>
+    </g>
+  </svg>
 
-            <!-- subtle claw hints -->
-            <path d="M135 238c10-10 18-14 28-16" stroke="rgba(0,255,220,0.08)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M220 215c10-11 19-16 31-18" stroke="rgba(0,255,220,0.08)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M312 220c11-12 21-16 34-18" stroke="rgba(0,255,220,0.08)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M388 252c10-10 18-13 28-14" stroke="rgba(0,255,220,0.08)" stroke-width="3" stroke-linecap="round"/>
-
-            <!-- VHS edge glow -->
-            <path
-              d="M256 205
-                 C186 205 120 260 120 338
-                 C120 434 188 486 256 486
-                 C324 486 392 434 392 338
-                 C392 260 326 205 256 205 Z"
-              fill="none" stroke="rgba(0,255,220,0.12)" stroke-width="3"/>
-          </svg>
-
-          <div class="pawText">
-            РАЗРУШИТЬ<br/>ПРОКЛЯТИЕ
-            <span class="pawSub">оставь отпечаток</span>
-          </div>
-        </div>
-      </button>
-    </div>
-
-    <div id="scanlines"></div>
-    <div id="noise"></div>
-    <div id="tracking"></div>
+  <div id="btnText">
+    <span>РАЗРУШИТЬ ПРОКЛЯТИЕ</span>
+    <span>оставь отпечаток</span>
   </div>
+</div>
 
-  <div id="blackout"></div>
+<div id="tvOff"></div>
 
-  <script>
-    // ===== Pointer tracking =====
-    let pointerX = window.innerWidth * 0.5;
-    let pointerY = window.innerHeight * 0.5;
+<script>
+const eyes=[];
+const EYE_COUNT=12;
 
-    function setPointer(x,y){ pointerX=x; pointerY=y; }
-    window.addEventListener('mousemove', (e)=> setPointer(e.clientX,e.clientY), {passive:true});
-    window.addEventListener('touchstart', (e)=>{
-      const t = e.touches[0]; if(!t) return;
-      setPointer(t.clientX, t.clientY);
-    }, {passive:true});
-    window.addEventListener('touchmove', (e)=>{
-      const t = e.touches[0]; if(!t) return;
-      setPointer(t.clientX, t.clientY);
-    }, {passive:true});
+function rand(a,b){return Math.random()*(b-a)+a}
 
-    // ===== Helpers =====
-    function rand(min,max){ return Math.random()*(max-min)+min; }
-    function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+function spawnEye(){
+  const e=document.createElement('div');
+  e.className='eye';
+  document.body.appendChild(e);
 
-    // ===== Eyes generation =====
-    const eyesLayer = document.getElementById('eyesLayer');
-    const EYES_COUNT = 12;
-    const eyes = [];
+  const size=rand(90,160);
+  e.style.width=e.style.height=size+'px';
 
-    function createEye(){
-      const el = document.createElement('div');
-      el.className = 'eye';
-      el.innerHTML = `<div class="ball"></div>`;
-      eyesLayer.appendChild(el);
+  let x,y,ok=false;
+  const btn=document.getElementById('breakBtn').getBoundingClientRect();
 
-      const ball = el.querySelector('.ball');
+  while(!ok){
+    x=rand(0,innerWidth-size);
+    y=rand(0,innerHeight-size);
+    ok=true;
 
-      const size = rand(120, 260);
-      el.style.width = size + 'px';
-      el.style.height = size + 'px';
+    // button exclusion
+    if(
+      x+size>btn.left-80 &&
+      x<btn.right+80 &&
+      y+size>btn.top-80 &&
+      y<btn.bottom+80
+    ) ok=false;
 
-      // сильнее разброс поворота
-      el.style.rotate = rand(-28, 28) + 'deg';
-
-      // initial position (иногда обрезается)
-      el.style.left = rand(-0.10, 1.10) * window.innerWidth + 'px';
-      el.style.top  = rand(-0.08, 1.08) * window.innerHeight + 'px';
-
-      // индивидуальный “центр” картинки
-      const baseBgX = rand(46, 54);
-      const baseBgY = rand(46, 54);
-      ball.style.backgroundPosition = `${baseBgX}% ${baseBgY}%`;
-
-      const eyeObj = {
-        el,
-        ball,
-        size,              // важно для анти-оверлапа
-        on:false,
-        nextToggle: performance.now() + rand(250, 1600),
-        safeRadius: rand(120, 240),    // зона "не лезь к центру" чуть шире
-        drift: rand(-0.22, 0.22),
-        phase: rand(0, Math.PI*2),
-        stareLockUntil: 0,
-        baseBgX,
-        baseBgY
-      };
-
-      eyes.push(eyeObj);
-      return eyeObj;
+    // eye overlap
+    for(const o of eyes){
+      const dx=x-o.x;
+      const dy=y-o.y;
+      if(Math.hypot(dx,dy)<(size+o.size)/2+20) ok=false;
     }
+  }
 
-    for(let i=0;i<EYES_COUNT;i++) createEye();
+  e.style.left=x+'px';
+  e.style.top=y+'px';
 
-    function placeEye(eye){
-      const cx = window.innerWidth/2;
-      const cy = window.innerHeight/2;
+  const eye={el:e,x,y,size};
+  eyes.push(eye);
+}
 
-      // обновим размер на всякий
-      eye.size = eye.el.getBoundingClientRect().width || eye.size;
+for(let i=0;i<EYE_COUNT;i++) spawnEye();
 
-      let x, y, tries = 0;
-      const margin = 26; // зазор между глазами
+document.addEventListener('mousemove',e=>{
+  eyes.forEach(eye=>{
+    const r=eye.el.getBoundingClientRect();
+    const cx=r.left+r.width/2;
+    const cy=r.top+r.height/2;
+    const dx=(e.clientX-cx)/8;
+    const dy=(e.clientY-cy)/8;
+    eye.el.style.transform=`translate(${dx}px,${dy}px)`;
+  });
+});
 
-      function overlapsAny(nx, ny){
-        for(const other of eyes){
-          if(other === eye) continue;
-          if(!other.on) continue;
+document.getElementById('breakBtn').onclick=()=>{
+  document.getElementById('tvOff').classList.add('active');
+  setTimeout(()=>document.body.innerHTML='',700);
+};
+</script>
 
-          const ox = parseFloat(other.el.style.left) || 0;
-          const oy = parseFloat(other.el.style.top) || 0;
-
-          const r1 = eye.size/2;
-          const r2 = other.size/2;
-          const minDist = r1 + r2 + margin;
-
-          if(Math.hypot(nx - ox, ny - oy) < minDist) return true;
-        }
-        return false;
-      }
-
-      do{
-        const nearCenter = Math.random() < 0.16;
-        if(nearCenter){
-          x = cx + rand(-260, 260);
-          y = cy + rand(-210, 210);
-        } else {
-          x = rand(-0.12, 1.12) * window.innerWidth;
-          y = rand(-0.10, 1.10) * window.innerHeight;
-        }
-        tries++;
-      } while(
-        tries < 60 &&
-        (Math.hypot(x - cx, y - cy) < eye.safeRadius || overlapsAny(x,y))
-      );
-
-      eye.el.style.left = x + 'px';
-      eye.el.style.top  = y + 'px';
-
-      // сильнее поворот при каждом появлении
-      eye.el.style.rotate = rand(-34, 34) + 'deg';
-
-      // разнообразим центр текстуры
-      eye.baseBgX = rand(44, 56);
-      eye.baseBgY = rand(44, 56);
-      eye.ball.style.backgroundPosition = `${eye.baseBgX}% ${eye.baseBgY}%`;
-    }
-
-    function toggleEye(eye){
-      eye.on = !eye.on;
-      if(eye.on){
-        placeEye(eye);
-        eye.el.classList.add('on');
-        eye.nextToggle = performance.now() + rand(2200, 5400);
-
-        // иногда “залипает”
-        if(Math.random() < 0.24){
-          eye.stareLockUntil = performance.now() + rand(900, 2400);
-        }
-      } else {
-        eye.el.classList.remove('on');
-        eye.nextToggle = performance.now() + rand(900, 2600);
-      }
-    }
-
-    function updateEyes(t){
-      for(const eye of eyes){
-        // toggles
-        if(t > eye.nextToggle){
-          if(!eye.on && Math.random() < 0.86) toggleEye(eye);
-          else if(eye.on && Math.random() < 0.52) toggleEye(eye);
-          else eye.nextToggle = t + rand(700, 1600);
-        }
-        if(!eye.on) continue;
-
-        // track pointer
-        const rect = eye.el.getBoundingClientRect();
-        const ex = rect.left + rect.width/2;
-        const ey = rect.top  + rect.height/2;
-
-        let tx = pointerX + (rect.width * eye.drift);
-        let ty = pointerY + (rect.height * eye.drift * 0.35);
-
-        const dx = tx - ex;
-        const dy = ty - ey;
-        const dist = Math.max(1, Math.hypot(dx,dy));
-        const nx = dx / dist;
-        const ny = dy / dist;
-
-        // мягкий дрейф
-        const jitter = Math.sin((t/2400) + ex*0.01) * 0.35;
-
-        // сильнее "косит" (движение background-position)
-        const moveX = clamp(nx * 9 + jitter, -10, 10);
-        const moveY = clamp(ny * 7 + jitter, -9, 9);
-
-        if(t < eye.stareLockUntil){
-          eye.ball.style.backgroundPosition =
-            `${eye.baseBgX + jitter}% ${eye.baseBgY + jitter}%`;
-        } else {
-          eye.ball.style.backgroundPosition =
-            `${eye.baseBgX + moveX}% ${eye.baseBgY + moveY}%`;
-        }
-      }
-      requestAnimationFrame(updateEyes);
-    }
-    requestAnimationFrame(updateEyes);
-
-    // ===== TV OFF =====
-    const btn = document.getElementById('breakBtn');
-    const screen = document.getElementById('screen');
-    const blackout = document.getElementById('blackout');
-
-    let off = false;
-    btn.addEventListener('click', ()=>{
-      if(off) return;
-      off = true;
-
-      eyesLayer.style.opacity = '0.9';
-      screen.classList.add('tvOff');
-      setTimeout(()=> blackout.classList.add('on'), 650);
-    });
-
-    window.addEventListener('resize', ()=>{
-      pointerX = window.innerWidth * 0.5;
-      pointerY = window.innerHeight * 0.5;
-    });
-  </script>
 </body>
 </html>
