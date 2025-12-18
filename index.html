@@ -1,335 +1,149 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>20:39</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<title>Мы меняемся</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: Inter, Arial, sans-serif;
+    cursor: pointer;
+  }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: "Consolas", "Courier New", monospace;
-      color: #e8ffff;
-    }
+  /* Текст по центру */
+  .center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+  }
 
-    /* ------------ ВИДЕО ------------ */
+  .text {
+    text-align: center;
+    color: #e9eef0;
+    letter-spacing: 0.12em;
+  }
 
-    #bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
-      filter:
-        contrast(1.05)
-        brightness(0.9)
-        saturate(0.8)
-        hue-rotate(-10deg)
-        blur(0.3px)
-        drop-shadow(-1px 0 rgba(255, 0, 128, 0.25))
-        drop-shadow(1px 0 rgba(0, 255, 255, 0.25));
-    }
+  .text .main {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 600;
+  }
 
-    .dark-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1;
-      pointer-events: none;
-    }
+  .text .date {
+    margin-top: 18px;
+    font-size: clamp(14px, 3vw, 18px);
+    opacity: 0.85;
+  }
 
-    /* ------------ VHS ШУМ ------------ */
+  .text .sub {
+    margin-top: 12px;
+    font-size: clamp(12px, 2.5vw, 16px);
+    opacity: 0.6;
+  }
 
-    .noise {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0.18;
-      background: repeating-linear-gradient(
-          0deg,
-          rgba(255,255,255,0.03) 0px,
-          rgba(255,255,255,0.03) 1px,
-          rgba(0,0,0,0.03) 1px,
-          rgba(0,0,0,0.03) 3px
-      );
-      animation: noiseShift 8s infinite linear;
-    }
+  /* Затемнение */
+  .fade {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.2s ease;
+    z-index: 10;
+  }
 
-    @keyframes noiseShift {
-      0%   { transform: translate(0,0); }
-      100% { transform: translate(-40px, 0); }
-    }
+  .fade.on {
+    opacity: 1;
+  }
 
-    .scanlines {
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.45) 0px,
-        rgba(0,0,0,0.45) 2px,
-        transparent 3px,
-        transparent 6px
-      );
-      opacity: 0.4;
-      z-index: 3;
-      pointer-events: none;
-      mix-blend-mode: multiply;
-    }
+  /* Снежинки */
+  .flake {
+    position: absolute;
+    top: -20px;
+    opacity: 0.7;
+    animation: fall linear forwards;
+    pointer-events: none;
+  }
 
-    .vignette {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
-      z-index: 4;
-      pointer-events: none;
-    }
-
-    /* ------------ CRT-ИСКАЖЕНИЯ ------------ */
-
-    .crt-warp {
-      position: fixed;
-      inset: -2%;
-      z-index: 5;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0, transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(0,255,255,0.04) 0, transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255,0,128,0.04) 0, transparent 55%);
-      mix-blend-mode: soft-light;
-      opacity: 0.8;
-      animation: crtWarp 14s infinite ease-in-out;
-    }
-
-    @keyframes crtWarp {
-      0%   { transform: scale(1.01, 1.01) translate(0,0); }
-      50%  { transform: scale(1.015, 1.008) translate(1px,-1px); }
-      100% { transform: scale(1.01, 1.01) translate(0,0); }
-    }
-
-    .tracking {
-      position: fixed;
-      inset: 0;
-      z-index: 6;
-      pointer-events: none;
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(255,255,255,0.18) 48%,
-        rgba(0,0,0,0.7) 52%,
-        transparent 100%
-      );
+  @keyframes fall {
+    to {
+      transform: translateY(110vh);
       opacity: 0;
-      mix-blend-mode: screen;
-      animation: trackingMove 7s infinite;
     }
-
-    @keyframes trackingMove {
-      0%,75%   { opacity: 0; transform: translateY(-100%); }
-      80%      { opacity: 0.45; transform: translateY(-10%); }
-      90%      { opacity: 0.25; transform: translateY(60%); }
-      100%     { opacity: 0; transform: translateY(120%); }
-    }
-
-    /* ------------ HUD ------------ */
-
-    .hud-block {
-      position: fixed;
-      letter-spacing: 0.12em;
-      color: #e8ffff;
-      font-size: 1.4rem;
-      text-shadow:
-        -1px 0 rgba(255,0,128,0.35),
-         1px 0 rgba(0,255,255,0.35),
-         0 0 4px rgba(0,255,200,0.35);
-      user-select: none;
-      z-index: 7;
-    }
-
-    /* ЛЕВЫЙ ВЕРХ */
-    .hud-top-left {
-      top: 28px;
-      left: 32px;
-      line-height: 1.35;
-    }
-
-    .rec-line {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      margin-bottom: 6px;
-    }
-
-    .rec-label {
-      font-size: 1.4rem;
-    }
-
-    .rec-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #ff2b2b;
-      box-shadow:
-        0 0 8px rgba(255,43,43,0.95),
-        0 0 18px rgba(255,43,43,0.7);
-      animation: recBlink 1.2s infinite ease-in-out;
-    }
-
-    @keyframes recBlink {
-      0%   { opacity: 1; }
-      50%  { opacity: 0.48; }
-      100% { opacity: 1; }
-    }
-
-    .rec-time {
-      animation: timeBlink 1s infinite steps(2);
-    }
-
-    @keyframes timeBlink {
-      0%,45% { opacity: 1; }
-      55%,100% { opacity: 0.45; }
-    }
-
-    /* ПРАВЫЙ ВЕРХ — адаптация под 9:16 */
-    .hud-top-right {
-      top: 28px;
-      right: 28px;
-      text-align: right;
-      line-height: 1.25;
-      max-width: 40vw;
-      font-size: 1.35rem;
-      letter-spacing: 0.11em;
-    }
-
-    .hud-top-right span {
-      display: block;
-    }
-
-    /* ЛЕВЫЙ НИЗ */
-    .hud-bottom-left {
-      bottom: 34px;
-      left: 32px;
-      text-align: left;
-      line-height: 1.3;
-    }
-
-    .hud-bottom-left span {
-      display: block;
-      opacity: 1;
-    }
-
-    /* ------------ ЦЕНТРАЛЬНАЯ НАДПИСЬ ------------ */
-
-    .center {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 8;
-      pointer-events: none;
-    }
-
-    .phrases {
-      position: relative;
-      min-width: 380px;
-      min-height: 4.9em;
-    }
-
-    .phrase {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.45s ease-out, transform 0.45s ease-out;
-      font-size: clamp(2.1rem, 5vw, 3.3rem);
-      letter-spacing: 0.16em;
-      text-shadow:
-        0 0 6px rgba(0,255,200,0.35),
-        0 0 14px rgba(0,180,255,0.35);
-      text-align: center;
-    }
-
-    .phrase.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  }
+</style>
 </head>
-
 <body>
 
-  <video id="bg-video" src="forest.mp4" autoplay loop muted playsinline></video>
-
-  <div class="dark-overlay"></div>
-  <div class="noise"></div>
-  <div class="scanlines"></div>
-  <div class="vignette"></div>
-  <div class="crt-warp"></div>
-  <div class="tracking"></div>
-
-  <!-- HUD -->
-  <div class="hud-block hud-top-left">
-    <div class="rec-line">
-      <div class="rec-label">REC</div>
-      <div class="rec-dot"></div>
-    </div>
-    <div class="rec-time" id="rec-time">00:00:00</div>
+<div class="center">
+  <div class="text">
+    <div class="main">МЫ МЕНЯЕМСЯ</div>
+    <div class="date">31 ДЕКАБРЯ</div>
+    <div class="sub">ДАЛЬШЕ — ДРУГОЕ</div>
   </div>
+</div>
 
-  <div class="hud-block hud-top-right">
-    <span>EXCLUSIVE BY</span>
-    <span>GREENCRAB</span>
-  </div>
+<div class="fade" id="fade"></div>
 
-  <div class="hud-block hud-bottom-left">
-    <span>20:39</span>
-    <span>14.12.2025 SUN</span>
-  </div>
+<script>
+  const MAX_FLAKES = 40;
+  const CRAB_RATIO = 0.15;
 
-  <!-- Центр -->
-  <div class="center">
-    <div class="phrases">
-      <div class="phrase active">ПРОКЛЯТИЕ МЕДВЕДЯ</div>
-      <div class="phrase">CURSE OF THE BEAR</div>
-      <div class="phrase">DER FLUCH DES BÄREN</div>
-      <div class="phrase">熊の呪い</div>
-      <div class="phrase">LA MALDICIÓN DEL OSO</div>
-      <div class="phrase">LA MALEDIZIONE DELL’ORSO</div>
-      <div class="phrase">MALDIÇÃO DO URSO</div>
-      <div class="phrase">BJÖRNENS FÖRBANNELSE</div>
-      <div class="phrase">AYININ LANETI</div>
-    </div>
-  </div>
+  function createCrabSVG(size, color) {
+    return `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 13c0-3.5 4-5.5 8-5.5s8 2 8 5.5-3 5.5-8 5.5-8-2-8-5.5z"/>
+        <path d="M2 11c1-1 2-1 3 0M19 11c1-1 2-1 3 0" stroke="${color}" stroke-width="1.4" fill="none"/>
+      </svg>
+    `;
+  }
 
-  <script>
-    function pad(n){ return n.toString().padStart(2,'0'); }
+  function spawnFlake() {
+    if (document.querySelectorAll('.flake').length > MAX_FLAKES) return;
 
-    function updateRecTime() {
-      const now = new Date();
-      document.getElementById("rec-time").textContent =
-        pad(now.getHours()) + ":" +
-        pad(now.getMinutes()) + ":" +
-        pad(now.getSeconds());
+    const flake = document.createElement('div');
+    flake.className = 'flake';
+
+    const isCrab = Math.random() < CRAB_RATIO;
+    const size = isCrab
+      ? Math.random() * 4 + 6
+      : Math.random() * 2 + 2;
+
+    const duration = Math.random() * 10 + 12;
+    const x = Math.random() * window.innerWidth;
+
+    flake.style.left = `${x}px`;
+    flake.style.animationDuration = `${duration}s`;
+
+    if (isCrab) {
+      flake.innerHTML = createCrabSVG(size, '#dbe4e8');
+    } else {
+      flake.style.width = `${size}px`;
+      flake.style.height = `${size}px`;
+      flake.style.background = '#e5ecef';
+      flake.style.borderRadius = '50%';
     }
-    setInterval(updateRecTime, 1000);
-    updateRecTime();
 
-    /* смена фраз */
-    const phrases = Array.from(document.querySelectorAll(".phrase"));
-    let index = 0;
+    document.body.appendChild(flake);
 
-    setInterval(() => {
-      phrases.forEach(p => p.classList.remove("active"));
-      phrases[index].classList.add("active");
-      index = (index + 1) % phrases.length;
-    }, 2600);
-  </script>
+    setTimeout(() => flake.remove(), duration * 1000);
+  }
+
+  setInterval(spawnFlake, 350);
+
+  document.addEventListener('click', () => {
+    document.getElementById('fade').classList.add('on');
+  });
+</script>
 
 </body>
 </html>
